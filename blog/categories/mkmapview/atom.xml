@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Mkmapview | jmcd.io]]></title>
+  <link href="http://jmcd.github.io/blog/categories/mkmapview/atom.xml" rel="self"/>
+  <link href="http://jmcd.github.io/"/>
+  <updated>2015-02-28T07:47:48+00:00</updated>
+  <id>http://jmcd.github.io/</id>
+  <author>
+    <name><![CDATA[John McDowall]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Handling MKMapView Annotation Pins on the Same Coordinate]]></title>
+    <link href="http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/"/>
+    <updated>2013-01-10T00:00:00+00:00</updated>
+    <id>http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate</id>
+    <content type="html"><![CDATA[<p>A component of a project I am working on displays shop locations on a map. A problem arises when the shops are located at a shopping centre or mall - the shops are invariably geo-coded to the same latitude-longitude coordinates.</p>
+
+<p>When the shops have the same coordinates, the annotations (pins) display in the exact same location on the map. This gives the appearance of there only being one pin, and indeed, the user can only tap one pin.</p>
+
+<p>To overcome this, we implemented a routine to re-place the pins at new coordinates surrounding the contested coordinate.</p>
+
+<p><img src="/img/Screen-Shot-2013-01-10-at-14.32.11.png" title="pins surrounding coord" ></p>
+
+<p><em>tl;dr get the full <a href="https://gist.github.com/4502302">code</a>.</em></p>
+
+<p>First we group the annotations by coordinate.</p>
+
+<pre><code class="objc">for (id&lt;MKAnnotation&gt; pin in annotations) {
+
+    CLLocationCoordinate2D coordinate = pin.coordinate;
+    NSValue *coordinateValue = [NSValue valueWithBytes:&amp;#038;coordinate objCType:@encode(CLLocationCoordinate2D)];
+
+    NSMutableArray *annotationsAtLocation = coordinateValuesToAnnotations[coordinateValue];
+    if (!annotationsAtLocation) {
+        annotationsAtLocation = [NSMutableArray array];
+        coordinateValuesToAnnotations[coordinateValue] = annotationsAtLocation;
+    }
+
+    [annotationsAtLocation addObject:pin];
+}
+</code></pre>
+
+<p>This routine produces a dictionary keyed on <code>NSValue</code>s containing a copy of the coordinate (you can&rsquo;t key a <code>NSDictionary</code> on a c-type). The value of a entry in the dictionary is a <code>NSArray</code> of annotations at that coordinate.</p>
+
+<p>You can see this only matches on exactly equal coordinates, but it would be relatively straightforward to group on coordinates that were close by calculating the distance between them.</p>
+
+<p>Next we enumerate the dictionary looking for locations that have more than one annotation. When we find one, we reposition the annotations.</p>
+
+<pre><code class="objc">double distance = 3 * annotations.count / 2.0;
+double radiansBetweenAnnotations = (M_PI * 2) / annotations.count;
+
+for (int i = 0; i &lt; annotations.count; i++) {
+
+    double heading = radiansBetweenAnnotations * i;
+    CLLocationCoordinate2D newCoordinate = [self calculateCoordinateFrom:coordinate onBearing:heading atDistance:distance];
+
+    id &lt;MKAnnotation&gt; annotation = annotations[i];
+    annotation.coordinate = newCoordinate;
+}
+</code></pre>
+
+<p>The pins are arranged in a circle around the contested point by dividing the circle by the number of contesting annotations. You can see that the distance from the contested coordinate to the new coordinate is a function of the number of annotations contesting - if there are few pins contesting the coordinate, then we have space to place the pins close to the coordinate.</p>
+
+<p>Finally, the new coordinate is calculated using an implementation of the function from this excellent resource: <a href="http://www.movable-type.co.uk/scripts/latlong.html">Destination point given distance and bearing from start point</a>.</p>
+
+<pre><code class="objc">+ (CLLocationCoordinate2D)calculateCoordinateFrom:(CLLocationCoordinate2D)coordinate onBearing:(double)bearingInRadians atDistance:(double)distanceInMetres {
+
+    double coordinateLatitudeInRadians = coordinate.latitude * M_PI / 180;
+    double coordinateLongitudeInRadians = coordinate.longitude * M_PI / 180;
+
+    double distanceComparedToEarth = distanceInMetres / 6378100;
+
+    double resultLatitudeInRadians = asin(sin(coordinateLatitudeInRadians) * cos(distanceComparedToEarth) + cos(coordinateLatitudeInRadians) * sin(distanceComparedToEarth) * cos(bearingInRadians));
+    double resultLongitudeInRadians = coordinateLongitudeInRadians + atan2(sin(bearingInRadians) * sin(distanceComparedToEarth) * cos(coordinateLatitudeInRadians), cos(distanceComparedToEarth) - sin(coordinateLatitudeInRadians) * sin(resultLatitudeInRadians));
+
+    CLLocationCoordinate2D result;
+    result.latitude = resultLatitudeInRadians * 180 / M_PI;
+    result.longitude = resultLongitudeInRadians * 180 / M_PI;
+    return result;
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

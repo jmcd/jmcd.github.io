@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Using Expression Trees to Avoid String Literal References - jmcd.io</title>
+  <meta name="author" content="John McDowall">
+
+  
+  <meta name="description" content="Often a developer will want to mirror the names of properties or methods of a class in some related dynamic resource that needs to bind to named &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jmcd.github.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="jmcd.io" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">jmcd.io</a></h1>
+  
+    <h2>John McDowall</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jmcd.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Using Expression Trees to Avoid String Literal References</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-06-30T00:00:00+01:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Often a developer will want to mirror the names of properties or methods of a class in some related dynamic resource that needs to bind to named members of the class. This happens a lot in user interface and serialization scenarios.</p>
+
+<p>For example, a user interface may need to populate the value of a text-box with a value dynamically looked up from a property on an instance of a class.  Typically, this is done with a hard-coded string literal.</p>
+
+<p>To avoid using hard-coded member names, expression trees can be used to define members, then utility code can translate that tree to a string.  The advantage here is that refactoring is pretty much guaranteed to work, and you get compile time checking.</p>
+
+<p>So, lets say I have the following class, and I am interested in writing the the names of the members to the console.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">class</span> <span class="nc">MyType</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">AStringProperty</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">object</span> <span class="nf">GetAnObject</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="k">new</span> <span class="nf">object</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="nf">GetAnInt</span><span class="p">(</span><span class="kt">string</span> <span class="n">a1</span><span class="p">,</span> <span class="kt">string</span> <span class="n">a2</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="m">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With a small amount of utility code, I can achieve my goal without string literals or resorting to reflection.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">Name</span><span class="p">.</span><span class="n">Of</span><span class="p">&lt;</span><span class="n">MyType</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">AStringProperty</span><span class="p">));</span>
+</span><span class='line'><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">Name</span><span class="p">.</span><span class="n">Of</span><span class="p">&lt;</span><span class="n">MyType</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">GetAnObject</span><span class="p">()));</span>
+</span><span class='line'><span class="n">Console</span><span class="p">.</span><span class="n">WriteLine</span><span class="p">(</span><span class="n">Name</span><span class="p">.</span><span class="n">Of</span><span class="p">&lt;</span><span class="n">MyType</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">GetAnInt</span><span class="p">(</span><span class="k">null</span><span class="p">,</span> <span class="k">null</span><span class="p">)));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which results in console output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">AStringProperty</span>
+</span><span class='line'><span class="n">GetAnObject</span>
+</span><span class='line'><span class="n">GetAnInt</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Utility Code The <i>Name</i> class has a single static method <i>Of</i>, which uses another the </i>ExpressionFinder</i> class to work out the member or method.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">class</span> <span class="nc">Name</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="n">Of</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">object</span><span class="p">&gt;&gt;</span> <span class="n">expr</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">ExpressionMemberFinder</span><span class="p">.</span><span class="n">FindMemberOrNull</span><span class="p">(</span><span class="n">expr</span><span class="p">).</span><span class="n">Name</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">ExpressionMemberFinder</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="n">MemberInfo</span> <span class="nf">FindMemberOrNull</span><span class="p">(</span><span class="n">Expression</span> <span class="n">expression</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">switch</span> <span class="p">(</span><span class="n">expression</span><span class="p">.</span><span class="n">NodeType</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">ExpressionType</span><span class="p">.</span><span class="n">Convert</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nf">FindMemberOrNull</span><span class="p">(((</span><span class="n">UnaryExpression</span><span class="p">)</span> <span class="n">expression</span><span class="p">).</span><span class="n">Operand</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">ExpressionType</span><span class="p">.</span><span class="n">Lambda</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">return</span> <span class="nf">FindMemberOrNull</span><span class="p">(((</span><span class="n">LambdaExpression</span><span class="p">)</span> <span class="n">expression</span><span class="p">).</span><span class="n">Body</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">ExpressionType</span><span class="p">.</span><span class="n">Call</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">return</span> <span class="p">((</span><span class="n">MethodCallExpression</span><span class="p">)</span> <span class="n">expression</span><span class="p">).</span><span class="n">Method</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">case</span> <span class="n">ExpressionType</span><span class="p">.</span><span class="n">MemberAccess</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">return</span> <span class="p">((</span><span class="n">MemberExpression</span><span class="p">)</span> <span class="n">expression</span><span class="p">).</span><span class="n">Member</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">default</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&rsquo;s worth noting that the only type of expression tree we can work on is one that ends in a single method-call or member-access.  It doesn&rsquo;t make any sense to work on a tree with branches or multiple leaf nodes.</p>
+
+<p>Lets examine what happens in the FindMemberOrNull method by looking at three kinds of tree that we can handle.</p>
+
+<h2>Behaviour #1, Finding a Property Access</h2>
+
+<p>Name.Of&lt;MyType&gt;(x =&gt; x.AStringProperty));</p>
+
+<ul>
+<li>FindMemberOrNull is called with a lambda {x =&gt; x.AStringProperty}</li>
+<li>FindMemberOrNull is called from within itself with the lambda&rsquo;s body, a member-expression {x =&gt; x.AStringProperty}</li>
+<li>The member-expression&rsquo;s member is returned</li>
+</ul>
+
+
+<h2>Behaviour #2, Finding a Method That Returns an Object</h2>
+
+<p>Name.Of&lt;MyType&gt;(x =&gt; x.GetAnObject()));</p>
+
+<ul>
+<li>FindMemberOrNull is called with a lambda {x =&gt; x.GetAnObject() }</li>
+<li>FindMemberOrNull is called from within itself with the lambda&rsquo;s body, a method-call-expression {x =&gt; x.GetAnObject()}</li>
+<li>The method-call-expression&rsquo;s method is returned</li>
+</ul>
+
+
+<h2>Behaviour #3, Finding a Method That Returns an Something Other Than an Object</h2>
+
+<p>Name.Of&lt;MyType&gt;(x.GetAnInt(null, null))); Slightly more interesting behaviour here.</p>
+
+<ul>
+<li>As the FindMemberOrNull method accepts a expression describing a function that returns System.Object, the compiler automatically wraps the expression in a unary-expression which converts from Expression&lt;Func&lt;MyType, int&gt;&gt; to Expression&lt;Func&lt;MyType, object&gt;&gt;.  - NICE!</li>
+<li>FindMemberOrNull is called with a lambda {x =&gt; Convert(x.GetAnInt(null, null))}</li>
+<li>FindMemberOrNull is called from within itself with the lambda&rsquo;s body, a unary-expression {x =&gt;Convert(x.GetAnInt(null, null))}</li>
+<li>FindMemberOrNull is called from within itself with the unary-expression&rsquo;s operand, a method-call-expression {x =&gt; x.GetAnInt(null, null)}</li>
+<li>The method-call-expression&rsquo;s method is returned</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">John McDowall</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2009-06-30T00:00:00+01:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>12:00 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/c-number/'>c#</a>, <a class='category' href='/blog/categories/expressions/'>expressions</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jmcd.github.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/" data-via="" data-counturl="http://jmcd.github.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/" title="Previous Post: Automatic Model Validation with ASP.NET MVC, xVal, Castle and a Custom Binder">&laquo; Automatic Model Validation with ASP.NET MVC, xVal, Castle and a Custom Binder</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls/" title="Next Post: Caching the Result of Arbitrary Function Calls">Caching the Result of Arbitrary Function Calls &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/">A Primer on Bluetooth Low Energy, and It&#8217;s Application in iOS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/">My Two Favourite Parts of the iOS 7 SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/">Handling MKMapView Annotation Pins on the Same Coordinate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/07/stop-it-nintendo-no-you're-hurting-me/">Stop It Nintendo, No, You&#8217;re Hurting Me</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2009/08/05/selecting-denormalized-child-nodes-and-parents-from-tree-with-linq/">Selecting Denormalized Child Nodes and Parents From Tree With Linq</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - John McDowall -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

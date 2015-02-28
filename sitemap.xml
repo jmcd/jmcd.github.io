@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/</loc>
+    <lastmod>2014-02-20T00:00:00+00:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/</loc>
+    <lastmod>2013-09-18T00:00:00+01:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/</loc>
+    <lastmod>2013-01-10T00:00:00+00:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/blog/2013/01/07/stop-it-nintendo-no-you&#8217;re-hurting-me/</loc>
+    <lastmod>2013-01-07T00:00:00+00:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/blog/2009/08/05/selecting-denormalized-child-nodes-and-parents-from-tree-with-linq/</loc>
+    <lastmod>2009-08-05T00:00:00+01:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls/</loc>
+    <lastmod>2009-08-05T00:00:00+01:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/</loc>
+    <lastmod>2009-06-30T00:00:00+01:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/</loc>
+    <lastmod>2009-04-07T00:00:00+01:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/blog/archives/</loc>
+    <lastmod>2015-02-28T07:47:48+00:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/</loc>
+    <lastmod>2015-02-28T07:47:48+00:00</lastmod>
+  </url>
+</urlset>

@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Two Favourite Parts of the iOS 7 SDK - jmcd.io</title>
+  <meta name="author" content="John McDowall">
+
+  
+  <meta name="description" content="Notifications and background downloading Prior to iOS 7, an inactive app is ignorant of notifications sent to the device. With iOS 7, an app can &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="jmcd.io" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">jmcd.io</a></h1>
+  
+    <h2>John McDowall</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jmcd.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">My Two Favourite Parts of the iOS 7 SDK</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-09-18T00:00:00+01:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>Notifications and background downloading</h2>
+
+<p>Prior to iOS 7, an inactive app is ignorant of notifications sent to the device. With iOS 7, an app can register to be woken when a notification arrives, in order to download data in the background. Imagine the you have a messaging app on your iOS 6 phone:</p>
+
+<ul>
+<li>Receive notification of new message</li>
+<li>You tap notification to launch app</li>
+<li><strong>You wait</strong> for app to connect to its server and download the message</li>
+</ul>
+
+
+<p>With iOS 7:</p>
+
+<ul>
+<li>Receive notification of new message</li>
+<li>App starts up in the background and downloads message from its server</li>
+<li>You tap notification to launch app, and <strong>the message is already there</strong></li>
+</ul>
+
+
+<p>An app running on iOS 7 can also request that the system give it regular background execution time to perform downloads. When you launch the Facebook app in the future, you may find that you do not have to wait for new posts to be downloaded, because the app has already downloaded them in the background.</p>
+
+<p>If an app takes too long to download data in the background, uses too much power or data it will be given less opportunity to download in the future.</p>
+
+<h2>Sprite Kit</h2>
+
+<p>Most developers have an idea for a game, but have no idea how to write it. Game development is a whole different world from the type of business or web work that developers tend to do.</p>
+
+<p>Sprite Kit is a framework that assists a developer creating 2D games by providing game-loop, facilities for graphics rendering, physics simulations and manipulation of in game objects. In short, it takes a lot of the grunt work out of creating a game.</p>
+
+<p>Here I wrote a very small app using Sprite Kit. You tap the screen to set a car driving from the left of the screen. The car accelerates up to a maximum of 30mph, and maybe crashes into other cars. <a href="https://gist.github.com/jmcd/6605801#file-myscene-m">The code I had to write is less than 80 lines long</a>, Sprite Kit handles all the heavy lifting, leaving the developer free to concentrate on game logic.</p>
+
+<p><video  preload='metadata' controls ><source src='/vid/SpriteKitDemo.mp4' type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'></video></p>
+
+<p>Expect to see a lot of developers writing games where previously the barrier of entry was too high.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">John McDowall</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2013-09-18T00:00:00+01:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>12:00 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cocoa-touch/'>cocoa touch</a>, <a class='category' href='/blog/categories/ios/'>ios</a>, <a class='category' href='/blog/categories/ios-7/'>ios 7</a>, <a class='category' href='/blog/categories/objective-c/'>objective-c</a>, <a class='category' href='/blog/categories/spritekit/'>spritekit</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/" data-via="" data-counturl="http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/" title="Previous Post: Handling MKMapView Annotation Pins on the Same Coordinate">&laquo; Handling MKMapView Annotation Pins on the Same Coordinate</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/" title="Next Post: A primer on Bluetooth Low Energy, and it's application in iOS">A primer on Bluetooth Low Energy, and it&#8217;s application in iOS &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/">A Primer on Bluetooth Low Energy, and It&#8217;s Application in iOS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/">My Two Favourite Parts of the iOS 7 SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/">Handling MKMapView Annotation Pins on the Same Coordinate</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/07/stop-it-nintendo-no-you're-hurting-me/">Stop It Nintendo, No, You&#8217;re Hurting Me</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2009/08/05/selecting-denormalized-child-nodes-and-parents-from-tree-with-linq/">Selecting Denormalized Child Nodes and Parents From Tree With Linq</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - John McDowall -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

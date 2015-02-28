@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: asp.net | jmcd.io]]></title>
+  <link href="http://jmcd.github.io/blog/categories/asp-dot-net/atom.xml" rel="self"/>
+  <link href="http://jmcd.github.io/"/>
+  <updated>2015-02-28T07:47:48+00:00</updated>
+  <id>http://jmcd.github.io/</id>
+  <author>
+    <name><![CDATA[John McDowall]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Automatic Model Validation With ASP.NET MVC, xVal, Castle and a Custom Binder]]></title>
+    <link href="http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/"/>
+    <updated>2009-04-07T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a</id>
+    <content type="html"><![CDATA[<p>There are several stages at which you can, and possibly should, validate data inputted to your application.  This post deals with server-side validation of user input before it reaches the controller.  It’s arguably not the controller’s responsibility to validate user input, and it’s nice to have a clean controller that can focus on its responsibility.  In this solution we tap into the ASP.NET MVC Model Binder framework so our controllers can count on the model having been validated before any of the action methods are called.</p>
+
+<p><a href="http://xval.codeplex.com/">xVal</a> is a nice validation framework written by <a href="http://blog.codeville.net/">Steve Sanderson</a>.  It can work with a bunch of server-side and client-side validation products.  I this case I’m going to use the server-side <a href="http://erichauser.net/2008/08/28/castle-validator-enhancements/">Castle Validator</a>.</p>
+
+<p>Once you have downloaded and referenced xVal and Castle Validator, you can decorate your model properties with attributes like so:</p>
+
+<pre><code class="csharp">using System;
+using Castle.Components.Validator;
+namespace Wow.MvcApplication.Models
+{
+    public class Person
+    {
+        [ValidateNonEmpty]
+        public string FirstName { get; set; }
+
+        public string MiddleName { get; set; }
+
+        [ValidateNonEmpty]
+        public string LastName { get; set; }
+
+        [ValidateDate]
+        public DateTime Dob { get; set; }
+    }
+}
+</code></pre>
+
+<p>Now we implement the validation runner that wraps up the Castle runner and returns validation data in xVal form:</p>
+
+<pre><code class="csharp">using System.Collections.Generic;
+using System.Linq;
+using Castle.Components.Validator;
+using xVal.ServerSide;
+
+namespace SomeMvcApplication
+{
+    public class CastleValidationRunner
+    {
+        private static readonly CachedValidationRegistry registry = new CachedValidationRegistry();
+
+        public static IList&lt;ErrorInfo&gt; GetErrors(object instance)
+        {
+            var result = new List&lt;ErrorInfo&gt;();
+            var runner = new ValidatorRunner(registry);
+
+            if (instance != null &amp;&amp; !runner.IsValid(instance))
+            {
+                var errorSummary = runner.GetErrorSummary(instance);
+                var errorInfos = errorSummary.InvalidProperties.SelectMany(
+                    prop =&gt; errorSummary.GetErrorsForProperty(prop),
+                    (prop, err) =&gt; new ErrorInfo(prop, err)
+                );
+                result.AddRange(errorInfos);
+            }
+
+            return result;
+        }
+    }
+}
+</code></pre>
+
+<p>Create a Model Binder that uses the new validation runner to populate ModelState:</p>
+
+<pre><code class="csharp">using System.Web.Mvc;
+
+namespace SomeMvcApplication
+{
+    public class ValidatingModelBinder : DefaultModelBinder
+    {
+        public override object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
+        {
+            var model = base.BindModel(controllerContext, bindingContext);
+            var errors = CastleValidationRunner.GetErrors(model);
+
+            foreach (var error in errors)
+            {
+                var propertyName = error.PropertyName;
+                var name = bindingContext.ModelName + "." + propertyName;
+                bindingContext.ModelState.AddModelError(name, error.ErrorMessage);
+            }
+            return model;
+        }
+    }
+}
+</code></pre>
+
+<p>Now hook up our new Model Binder in Global.ascx.cs:</p>
+
+<pre><code class="csharp">protected void Application_Start()
+{
+    ModelBinders.Binders.DefaultBinder = new ValidatingModelBinder();
+}
+</code></pre>
+
+<p>And we are done.  Controllers can now count on validated models like so:</p>
+
+<pre><code class="csharp">[AcceptVerbs(HttpVerbs.Post)]
+public ActionResult Edit(Person model)
+{
+    if (!ModelState.IsValid)
+    {
+        return View(model);
+    }
+    // In real life, map the model to domain, then save
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
