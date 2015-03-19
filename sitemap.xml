@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+<<<<<<< HEAD
     <loc>http://jmcd.github.io/blog/2015/03/18/private-methods-are-a-code-smell/</loc>
     <lastmod>2015-03-18T21:11:01+00:00</lastmod>
   </url>
@@ -9,6 +10,8 @@
     <lastmod>2015-03-03T16:11:01+00:00</lastmod>
   </url>
   <url>
+=======
+>>>>>>> 5af33b1e15f225bfba01899c9a3b62380c83fdf3
     <loc>http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/</loc>
     <lastmod>2014-02-20T00:00:00+00:00</lastmod>
   </url>
@@ -42,10 +45,18 @@
   </url>
   <url>
     <loc>http://jmcd.github.io/blog/archives/</loc>
+<<<<<<< HEAD
     <lastmod>2015-03-19T10:44:13+00:00</lastmod>
   </url>
   <url>
     <loc>http://jmcd.github.io/</loc>
     <lastmod>2015-03-19T10:44:13+00:00</lastmod>
+=======
+    <lastmod>2015-02-28T08:25:55+00:00</lastmod>
+  </url>
+  <url>
+    <loc>http://jmcd.github.io/</loc>
+    <lastmod>2015-02-28T08:25:55+00:00</lastmod>
+>>>>>>> 5af33b1e15f225bfba01899c9a3b62380c83fdf3
   </url>
 </urlset>

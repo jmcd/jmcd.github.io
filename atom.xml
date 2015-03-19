@@ -4,7 +4,11 @@
   <title><![CDATA[jmcd.io]]></title>
   <link href="http://jmcd.github.io/atom.xml" rel="self"/>
   <link href="http://jmcd.github.io/"/>
+<<<<<<< HEAD
   <updated>2015-03-19T10:44:13+00:00</updated>
+=======
+  <updated>2015-02-28T08:25:55+00:00</updated>
+>>>>>>> 5af33b1e15f225bfba01899c9a3b62380c83fdf3
   <id>http://jmcd.github.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
@@ -14,6 +18,7 @@
 
   
   <entry>
+<<<<<<< HEAD
     <title type="html"><![CDATA[Method Access Modifiers as Code Smells]]></title>
     <link href="http://jmcd.github.io/blog/2015/03/18/private-methods-are-a-code-smell/"/>
     <updated>2015-03-18T21:11:01+00:00</updated>
@@ -86,6 +91,8 @@
   </entry>
   
   <entry>
+=======
+>>>>>>> 5af33b1e15f225bfba01899c9a3b62380c83fdf3
     <title type="html"><![CDATA[A Primer on Bluetooth Low Energy, and It's Application in iOS]]></title>
     <link href="http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/"/>
     <updated>2014-02-20T00:00:00+00:00</updated>
