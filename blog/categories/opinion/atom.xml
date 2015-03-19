@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Opinion | jmcd.io]]></title>
   <link href="http://jmcd.io/blog/categories/opinion/atom.xml" rel="self"/>
   <link href="http://jmcd.io/"/>
-  <updated>2015-03-19T10:57:13+00:00</updated>
+  <updated>2015-03-19T11:26:26+00:00</updated>
   <id>http://jmcd.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
@@ -18,7 +18,7 @@
     <link href="http://jmcd.io/blog/2015/03/18/method-access-modifiers-as-code-smells/"/>
     <updated>2015-03-18T21:11:01+00:00</updated>
     <id>http://jmcd.io/blog/2015/03/18/method-access-modifiers-as-code-smells</id>
-    <content type="html"><![CDATA[<p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
+    <content type="html"><![CDATA[<p>There&rsquo;s a couple of anti-patterns that I&rsquo;ve noticed in my own code.</p>
 
 <h2>Private methods are a code smell</h2>
 
