@@ -1,93 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>jmcd.io</title>
-  <meta name="author" content="John McDowall">
-
-  
-  <meta name="description" content="There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code. Private methods are a code smell Private methods are not inherently bad, &hellip;">
-  
-
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://jmcd.github.io/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="jmcd.io" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">jmcd.io</a></h1>
-  
-    <h2>John McDowall</h2>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="http://www.duckduckgo.com/" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="sitesearch" value="jmcd.github.io">
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
-
-</nav>
-  <div id="main">
-    <div id="content">
-      <div class="blog-index">
-  
-  
-  
-    <article>
-      
-  <header>
+  <title><![CDATA[jmcd.io]]></title>
+  <link href="http://jmcd.github.io/atom.xml" rel="self"/>
+  <link href="http://jmcd.github.io/"/>
+  <updated>2015-03-19T10:44:13+00:00</updated>
+  <id>http://jmcd.github.io/</id>
+  <author>
+    <name><![CDATA[John McDowall]]></name>
     
-      <h1 class="entry-title"><a href="/blog/2015/03/18/private-methods-are-a-code-smell/">Method Access Modifiers as Code Smells</a></h1>
-    
-    
-      <p class="meta">
-        
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
 
-
-
-
-<time class='entry-date' datetime='2015-03-18T21:11:01+00:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:11 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
+  
+  <entry>
+    <title type="html"><![CDATA[Method Access Modifiers as Code Smells]]></title>
+    <link href="http://jmcd.github.io/blog/2015/03/18/private-methods-are-a-code-smell/"/>
+    <updated>2015-03-18T21:11:01+00:00</updated>
+    <id>http://jmcd.github.io/blog/2015/03/18/private-methods-are-a-code-smell</id>
+    <content type="html"><![CDATA[<p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
 
 <h2>Private methods are a code smell</h2>
 
@@ -115,35 +46,15 @@
 <p>When I am thinking about the dependencies that I need to create an object (e.g. for testing), if all the dependencies are not used by all the methods, then maybe a red light should be flashing in my brain.</p>
 
 <p>I see this a lot in ASP.NET MVC controller, where I have a controller that is notionally <em>about</em> a class of entity, but the sets of method depend on different things (database access, report outputs, email). Break it up.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/03/method-access-modifiers-as-code-smells/">Method Access Modifiers as Code Smells</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-03-03T16:11:01+00:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>4:11 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
+  <entry>
+    <title type="html"><![CDATA[Method Access Modifiers as Code Smells]]></title>
+    <link href="http://jmcd.github.io/blog/2015/03/03/method-access-modifiers-as-code-smells/"/>
+    <updated>2015-03-03T16:11:01+00:00</updated>
+    <id>http://jmcd.github.io/blog/2015/03/03/method-access-modifiers-as-code-smells</id>
+    <content type="html"><![CDATA[<p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
 
 <h2>Private methods are a code smell</h2>
 
@@ -171,35 +82,15 @@
 <p>When I am thinking about the dependencies that I need to create an object (e.g. for testing), if all the dependencies are not used by all the methods, then maybe a red light should be flashing in my brain.</p>
 
 <p>I see this a lot in ASP.NET MVC controller, where I have a controller that is notionally <em>about</em> a class of entity, but the sets of method depend on different things (database access, report outputs, email). Break it up.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/">A Primer on Bluetooth Low Energy, and It&#8217;s Application in iOS</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-02-20T00:00:00+00:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>What is it?</h2>
+  <entry>
+    <title type="html"><![CDATA[A Primer on Bluetooth Low Energy, and It's Application in iOS]]></title>
+    <link href="http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/"/>
+    <updated>2014-02-20T00:00:00+00:00</updated>
+    <id>http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios</id>
+    <content type="html"><![CDATA[<h2>What is it?</h2>
 
 <p>Bluetooth Low Energy (BLE) is a technology for allowing devices to communicate in a way that is highly optimized for conserving battery power.</p>
 
@@ -221,7 +112,7 @@
 
 <p>Communication between connected central and peripheral takes place by reading and writing of characteristic values exposed by the peripheral. Characteristics are grouped into services. Services and characteristics are identified by unique identifiers. Characteristic values are 16 bytes long.</p>
 
-<p><img src="/img/blutoot.png" title="hierarchy of device" ></p>
+<p><img src="http://jmcd.github.io/img/blutoot.png" title="hierarchy of device" ></p>
 
 <p>A central can directly read the value of a characteristic, or it can register with the peripheral to receive updates when the value changes.</p>
 
@@ -402,35 +293,15 @@
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/">My Two Favourite Parts of the iOS 7 SDK</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-09-18T00:00:00+01:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Notifications and background downloading</h2>
+  <entry>
+    <title type="html"><![CDATA[My Two Favourite Parts of the iOS 7 SDK]]></title>
+    <link href="http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/"/>
+    <updated>2013-09-18T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk</id>
+    <content type="html"><![CDATA[<h2>Notifications and background downloading</h2>
 
 <p>Prior to iOS 7, an inactive app is ignorant of notifications sent to the device. With iOS 7, an app can register to be woken when a notification arrives, in order to download data in the background. Imagine the you have a messaging app on your iOS 6 phone:</p>
 
@@ -462,44 +333,24 @@
 
 <p>Here I wrote a very small app using Sprite Kit. You tap the screen to set a car driving from the left of the screen. The car accelerates up to a maximum of 30mph, and maybe crashes into other cars. <a href="https://gist.github.com/jmcd/6605801#file-myscene-m">The code I had to write is less than 80 lines long</a>, Sprite Kit handles all the heavy lifting, leaving the developer free to concentrate on game logic.</p>
 
-<p><video  preload='metadata' controls ><source src='/vid/SpriteKitDemo.mp4' type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'></video></p>
+<p><video  preload='metadata' controls ><source src='http://jmcd.github.io/vid/SpriteKitDemo.mp4' type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'></video></p>
 
 <p>Expect to see a lot of developers writing games where previously the barrier of entry was too high.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/">Handling MKMapView Annotation Pins on the Same Coordinate</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-01-10T00:00:00+00:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>10</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>A component of a project I am working on displays shop locations on a map. A problem arises when the shops are located at a shopping centre or mall - the shops are invariably geo-coded to the same latitude-longitude coordinates.</p>
+  <entry>
+    <title type="html"><![CDATA[Handling MKMapView Annotation Pins on the Same Coordinate]]></title>
+    <link href="http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/"/>
+    <updated>2013-01-10T00:00:00+00:00</updated>
+    <id>http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate</id>
+    <content type="html"><![CDATA[<p>A component of a project I am working on displays shop locations on a map. A problem arises when the shops are located at a shopping centre or mall - the shops are invariably geo-coded to the same latitude-longitude coordinates.</p>
 
 <p>When the shops have the same coordinates, the annotations (pins) display in the exact same location on the map. This gives the appearance of there only being one pin, and indeed, the user can only tap one pin.</p>
 
 <p>To overcome this, we implemented a routine to re-place the pins at new coordinates surrounding the contested coordinate.</p>
 
-<p><img src="/img/Screen-Shot-2013-01-10-at-14.32.11.png" title="pins surrounding coord" ></p>
+<p><img src="http://jmcd.github.io/img/Screen-Shot-2013-01-10-at-14.32.11.png" title="pins surrounding coord" ></p>
 
 <p><em>tl;dr get the full <a href="https://gist.github.com/4502302">code</a>.</em></p>
 
@@ -601,35 +452,15 @@
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/01/07/stop-it-nintendo-no-you're-hurting-me/">Stop It Nintendo, No, You&#8217;re Hurting Me</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2013-01-07T00:00:00+00:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>In the early nineties I bought a SNES with Super Mario World. You could go from a boxed console to playing a game in minutes - all you had to do was plug a few cables in.</p>
+  <entry>
+    <title type="html"><![CDATA[Stop It Nintendo, No, You're Hurting Me]]></title>
+    <link href="http://jmcd.github.io/blog/2013/01/07/stop-it-nintendo-no-you're-hurting-me/"/>
+    <updated>2013-01-07T00:00:00+00:00</updated>
+    <id>http://jmcd.github.io/blog/2013/01/07/stop-it-nintendo-no-you&#8217;re-hurting-me</id>
+    <content type="html"><![CDATA[<p>In the early nineties I bought a SNES with Super Mario World. You could go from a boxed console to playing a game in minutes - all you had to do was plug a few cables in.</p>
 
 <p>Yesterday I got a Wii U. The setup process was so long winded and exasperating that it would make the calmest fanboy wonder whether there is any Nintendo employee with the responsibility of &ldquo;giving a fuck about user experience&rdquo;.</p>
 
@@ -760,35 +591,15 @@ M:  Guys, I'm going home. This fine liquor isn't going to drink itself.
 <p>Now I have my Wii data on my Wii U. I am so smart. Wait! My Wii was one of the original ones with GameCube compatibility, that means that if I want to play Super Mario 64 I have to play it on, <em>shudder</em>, the classic controller! Nooooooooooo!</p>
 
 <p>Fuck it, I&rsquo;ll just get my N64 out.</p>
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/08/05/selecting-denormalized-child-nodes-and-parents-from-tree-with-linq/">Selecting Denormalized Child Nodes and Parents From Tree With Linq</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2009-08-05T00:00:00+01:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Problem: You have a collection of objects.&#160; Each object has a number of children.&#160; You want all the children matching a criteria, AND the parent.&#160; The child does not reference the parent.</p>
+  <entry>
+    <title type="html"><![CDATA[Selecting Denormalized Child Nodes and Parents From Tree With Linq]]></title>
+    <link href="http://jmcd.github.io/blog/2009/08/05/selecting-denormalized-child-nodes-and-parents-from-tree-with-linq/"/>
+    <updated>2009-08-05T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2009/08/05/selecting-denormalized-child-nodes-and-parents-from-tree-with-linq</id>
+    <content type="html"><![CDATA[<p>Problem: You have a collection of objects.&#160; Each object has a number of children.&#160; You want all the children matching a criteria, AND the parent.&#160; The child does not reference the parent.</p>
 
 <p>Solution: You can use Linq to</p>
 
@@ -937,35 +748,15 @@ M:  Guys, I'm going home. This fine liquor isn't going to drink itself.
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls/">Caching the Result of Arbitrary Function Calls</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2009-08-05T00:00:00+01:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Here is the approach I took to performing the result of a method call, which is done in a reusable way which may be interesting.  Instead of calling my method normally like this:</p>
+  <entry>
+    <title type="html"><![CDATA[Caching the Result of Arbitrary Function Calls]]></title>
+    <link href="http://jmcd.github.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls/"/>
+    <updated>2009-08-05T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls</id>
+    <content type="html"><![CDATA[<p>Here is the approach I took to performing the result of a method call, which is done in a reusable way which may be interesting.  Instead of calling my method normally like this:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1147,35 +938,15 @@ M:  Guys, I'm going home. This fine liquor isn't going to drink itself.
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/">Using Expression Trees to Avoid String Literal References</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2009-06-30T00:00:00+01:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Often a developer will want to mirror the names of properties or methods of a class in some related dynamic resource that needs to bind to named members of the class. This happens a lot in user interface and serialization scenarios.</p>
+  <entry>
+    <title type="html"><![CDATA[Using Expression Trees to Avoid String Literal References]]></title>
+    <link href="http://jmcd.github.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/"/>
+    <updated>2009-06-30T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references</id>
+    <content type="html"><![CDATA[<p>Often a developer will want to mirror the names of properties or methods of a class in some related dynamic resource that needs to bind to named members of the class. This happens a lot in user interface and serialization scenarios.</p>
 
 <p>For example, a user interface may need to populate the value of a text-box with a value dynamically looked up from a property on an instance of a class.  Typically, this is done with a hard-coded string literal.</p>
 
@@ -1333,35 +1104,15 @@ M:  Guys, I'm going home. This fine liquor isn't going to drink itself.
 <li>The method-call-expression&rsquo;s method is returned</li>
 </ul>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/">Automatic Model Validation With ASP.NET MVC, xVal, Castle and a Custom Binder</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2009-04-07T00:00:00+01:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>12:00 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>There are several stages at which you can, and possibly should, validate data inputted to your application.  This post deals with server-side validation of user input before it reaches the controller.  It’s arguably not the controller’s responsibility to validate user input, and it’s nice to have a clean controller that can focus on its responsibility.  In this solution we tap into the ASP.NET MVC Model Binder framework so our controllers can count on the model having been validated before any of the action methods are called.</p>
+  <entry>
+    <title type="html"><![CDATA[Automatic Model Validation With ASP.NET MVC, xVal, Castle and a Custom Binder]]></title>
+    <link href="http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/"/>
+    <updated>2009-04-07T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a</id>
+    <content type="html"><![CDATA[<p>There are several stages at which you can, and possibly should, validate data inputted to your application.  This post deals with server-side validation of user input before it reaches the controller.  It’s arguably not the controller’s responsibility to validate user input, and it’s nice to have a clean controller that can focus on its responsibility.  In this solution we tap into the ASP.NET MVC Model Binder framework so our controllers can count on the model having been validated before any of the action methods are called.</p>
 
 <p><a href="http://xval.codeplex.com/">xVal</a> is a nice validation framework written by <a href="http://blog.codeville.net/">Steve Sanderson</a>.  It can work with a bunch of server-side and client-side validation products.  I this case I’m going to use the server-side <a href="http://erichauser.net/2008/08/28/castle-validator-enhancements/">Castle Validator</a>.</p>
 
@@ -1553,84 +1304,7 @@ M:  Guys, I'm going home. This fine liquor isn't going to drink itself.
 </span><span class='line'><span class="p">}</span>
 </span></code></pre></td></tr></table></div></figure>
 
-</div>
+]]></content>
+  </entry>
   
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2015/03/18/private-methods-are-a-code-smell/">Method Access Modifiers as Code Smells</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/03/method-access-modifiers-as-code-smells/">Method Access Modifiers as Code Smells</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/">A Primer on Bluetooth Low Energy, and It&#8217;s Application in iOS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/">My Two Favourite Parts of the iOS 7 SDK</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/">Handling MKMapView Annotation Pins on the Same Coordinate</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2015 - John McDowall -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
-  
-
-
-
-
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
-</body>
-</html>
+</feed>

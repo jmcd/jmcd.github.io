@@ -1,0 +1,394 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Automatic Model Validation With ASP.NET MVC, xVal, Castle and a Custom Binder - jmcd.io</title>
+  <meta name="author" content="John McDowall">
+
+  
+  <meta name="description" content="There are several stages at which you can, and possibly should, validate data inputted to your application.  This post deals with server-side &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="jmcd.io" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">jmcd.io</a></h1>
+  
+    <h2>John McDowall</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://www.duckduckgo.com/" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="jmcd.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Automatic Model Validation With ASP.NET MVC, xVal, Castle and a Custom Binder</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2009-04-07T00:00:00+01:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>12:00 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>There are several stages at which you can, and possibly should, validate data inputted to your application.  This post deals with server-side validation of user input before it reaches the controller.  It’s arguably not the controller’s responsibility to validate user input, and it’s nice to have a clean controller that can focus on its responsibility.  In this solution we tap into the ASP.NET MVC Model Binder framework so our controllers can count on the model having been validated before any of the action methods are called.</p>
+
+<p><a href="http://xval.codeplex.com/">xVal</a> is a nice validation framework written by <a href="http://blog.codeville.net/">Steve Sanderson</a>.  It can work with a bunch of server-side and client-side validation products.  I this case I’m going to use the server-side <a href="http://erichauser.net/2008/08/28/castle-validator-enhancements/">Castle Validator</a>.</p>
+
+<p>Once you have downloaded and referenced xVal and Castle Validator, you can decorate your model properties with attributes like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">Castle.Components.Validator</span><span class="p">;</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">Wow.MvcApplication.Models</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">class</span> <span class="nc">Person</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'><span class="na">     [ValidateNonEmpty]</span>
+</span><span class='line'>      <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">public</span> <span class="kt">string</span> <span class="n">MiddleName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">     </span>
+</span><span class='line'><span class="na">     [ValidateNonEmpty]</span>
+</span><span class='line'>      <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'><span class="na">     </span>
+</span><span class='line'><span class="na">     [ValidateDate]</span>
+</span><span class='line'>      <span class="k">public</span> <span class="n">DateTime</span> <span class="n">Dob</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we implement the validation runner that wraps up the Castle runner and returns validation data in xVal form:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">Castle.Components.Validator</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">xVal.ServerSide</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">SomeMvcApplication</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">class</span> <span class="nc">CastleValidationRunner</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">private</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">CachedValidationRegistry</span> <span class="n">registry</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CachedValidationRegistry</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">public</span> <span class="k">static</span> <span class="n">IList</span><span class="p">&lt;</span><span class="n">ErrorInfo</span><span class="p">&gt;</span> <span class="n">GetErrors</span><span class="p">(</span><span class="kt">object</span> <span class="n">instance</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">ErrorInfo</span><span class="p">&gt;();</span>
+</span><span class='line'>          <span class="kt">var</span> <span class="n">runner</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ValidatorRunner</span><span class="p">(</span><span class="n">registry</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="n">instance</span> <span class="p">!=</span> <span class="k">null</span> <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="n">runner</span><span class="p">.</span><span class="n">IsValid</span><span class="p">(</span><span class="n">instance</span><span class="p">))</span>
+</span><span class='line'>          <span class="p">{</span>
+</span><span class='line'>              <span class="kt">var</span> <span class="n">errorSummary</span> <span class="p">=</span> <span class="n">runner</span><span class="p">.</span><span class="n">GetErrorSummary</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+</span><span class='line'>              <span class="kt">var</span> <span class="n">errorInfos</span> <span class="p">=</span> <span class="n">errorSummary</span><span class="p">.</span><span class="n">InvalidProperties</span><span class="p">.</span><span class="n">SelectMany</span><span class="p">(</span>
+</span><span class='line'>                  <span class="n">prop</span> <span class="p">=&gt;</span> <span class="n">errorSummary</span><span class="p">.</span><span class="n">GetErrorsForProperty</span><span class="p">(</span><span class="n">prop</span><span class="p">),</span>
+</span><span class='line'>                  <span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">ErrorInfo</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+</span><span class='line'>              <span class="p">);</span>
+</span><span class='line'>              <span class="n">result</span><span class="p">.</span><span class="n">AddRange</span><span class="p">(</span><span class="n">errorInfos</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Create a Model Binder that uses the new validation runner to populate ModelState:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="nn">System.Web.Mvc</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">SomeMvcApplication</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">class</span> <span class="nc">ValidatingModelBinder</span> <span class="p">:</span> <span class="n">DefaultModelBinder</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">public</span> <span class="k">override</span> <span class="kt">object</span> <span class="nf">BindModel</span><span class="p">(</span><span class="n">ControllerContext</span> <span class="n">controllerContext</span><span class="p">,</span> <span class="n">ModelBindingContext</span> <span class="n">bindingContext</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="kt">var</span> <span class="n">model</span> <span class="p">=</span> <span class="k">base</span><span class="p">.</span><span class="n">BindModel</span><span class="p">(</span><span class="n">controllerContext</span><span class="p">,</span> <span class="n">bindingContext</span><span class="p">);</span>
+</span><span class='line'>          <span class="kt">var</span> <span class="n">errors</span> <span class="p">=</span> <span class="n">CastleValidationRunner</span><span class="p">.</span><span class="n">GetErrors</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">error</span> <span class="k">in</span> <span class="n">errors</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">{</span>
+</span><span class='line'>              <span class="kt">var</span> <span class="n">propertyName</span> <span class="p">=</span> <span class="n">error</span><span class="p">.</span><span class="n">PropertyName</span><span class="p">;</span>
+</span><span class='line'>              <span class="kt">var</span> <span class="n">name</span> <span class="p">=</span> <span class="n">bindingContext</span><span class="p">.</span><span class="n">ModelName</span> <span class="p">+</span> <span class="s">&quot;.&quot;</span> <span class="p">+</span> <span class="n">propertyName</span><span class="p">;</span>
+</span><span class='line'>              <span class="n">bindingContext</span><span class="p">.</span><span class="n">ModelState</span><span class="p">.</span><span class="n">AddModelError</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">error</span><span class="p">.</span><span class="n">ErrorMessage</span><span class="p">);</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">model</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now hook up our new Model Binder in Global.ascx.cs:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">protected</span> <span class="k">void</span> <span class="nf">Application_Start</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">ModelBinders</span><span class="p">.</span><span class="n">Binders</span><span class="p">.</span><span class="n">DefaultBinder</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ValidatingModelBinder</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we are done.  Controllers can now count on validated models like so:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[AcceptVerbs(HttpVerbs.Post)]</span>
+</span><span class='line'><span class="k">public</span> <span class="n">ActionResult</span> <span class="nf">Edit</span><span class="p">(</span><span class="n">Person</span> <span class="n">model</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(!</span><span class="n">ModelState</span><span class="p">.</span><span class="n">IsValid</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nf">View</span><span class="p">(</span><span class="n">model</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="c1">// In real life, map the model to domain, then save</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">John McDowall</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2009-04-07T00:00:00+01:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2009</span></span> <span class='time'>12:00 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/asp-dot-net/'>asp.net</a>, <a class='category' href='/blog/categories/mvc/'>mvc</a>, <a class='category' href='/blog/categories/validation/'>validation</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/" data-via="" data-counturl="http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/" title="Next Post: Using Expression Trees to Avoid String Literal References">Using Expression Trees to Avoid String Literal References &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/18/private-methods-are-a-code-smell/">Method Access Modifiers as Code Smells</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/03/method-access-modifiers-as-code-smells/">Method Access Modifiers as Code Smells</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/">A Primer on Bluetooth Low Energy, and It&#8217;s Application in iOS</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/">My Two Favourite Parts of the iOS 7 SDK</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/">Handling MKMapView Annotation Pins on the Same Coordinate</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - John McDowall -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

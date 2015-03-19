@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Opinion | jmcd.io]]></title>
+  <link href="http://jmcd.github.io/blog/categories/opinion/atom.xml" rel="self"/>
+  <link href="http://jmcd.github.io/"/>
+  <updated>2015-03-19T10:44:13+00:00</updated>
+  <id>http://jmcd.github.io/</id>
+  <author>
+    <name><![CDATA[John McDowall]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Method Access Modifiers as Code Smells]]></title>
+    <link href="http://jmcd.github.io/blog/2015/03/18/private-methods-are-a-code-smell/"/>
+    <updated>2015-03-18T21:11:01+00:00</updated>
+    <id>http://jmcd.github.io/blog/2015/03/18/private-methods-are-a-code-smell</id>
+    <content type="html"><![CDATA[<p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
+
+<h2>Private methods are a code smell</h2>
+
+<p>Private methods are not inherently bad, but they are <strong>a sign</strong> that you might be missing out on an opportunity to make a useful abstraction. If you have a private method that calls another private method, then there is almost certainly an area of responsibility that remains unidentified.</p>
+
+<p>If I have a class with a private method, then it&rsquo;s probably the result of me refactoring a piece of a public method, but not taking it to conclusion - I should keep going and move the method its own class!</p>
+
+<p>I move a private method into its own class, and I am forced to think about its dependencies and API. Now it&rsquo;s automatically testable and re-composable.</p>
+
+<p>Use cases:</p>
+
+<ul>
+<li>Private method with no dependencies - just move the method to a new class</li>
+<li>Private method with dependencies on services - move the method to a new class, rationalize its dependiencies, use instances as a dependency of the parent.</li>
+<li>Private method that uses mutates state - move the method to a new class, state mutation commands delivered from the method and interpreted by the parent.</li>
+</ul>
+
+
+<h2>Too many public methods are a code smell</h2>
+
+<p>When I have a class with a load of public instance methods, it&rsquo;s unlikely that they all operate on the same state, or depend on the same objects.</p>
+
+<p>If the methods don&rsquo;t operate on the same thing, then they don&rsquo;t belong together.</p>
+
+<p>When I am thinking about the dependencies that I need to create an object (e.g. for testing), if all the dependencies are not used by all the methods, then maybe a red light should be flashing in my brain.</p>
+
+<p>I see this a lot in ASP.NET MVC controller, where I have a controller that is notionally <em>about</em> a class of entity, but the sets of method depend on different things (database access, report outputs, email). Break it up.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Method Access Modifiers as Code Smells]]></title>
+    <link href="http://jmcd.github.io/blog/2015/03/03/method-access-modifiers-as-code-smells/"/>
+    <updated>2015-03-03T16:11:01+00:00</updated>
+    <id>http://jmcd.github.io/blog/2015/03/03/method-access-modifiers-as-code-smells</id>
+    <content type="html"><![CDATA[<p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
+
+<h2>Private methods are a code smell</h2>
+
+<p>Private methods are not inherently bad, but they are <strong>a sign</strong> that you might be missing out on an opportunity to make a useful abstraction. If you have a private method that calls another private method, then there is almost certainly an area of responsibility that remains unidentified.</p>
+
+<p>If I have a class with a private method, then it&rsquo;s probably the result of me refactoring a piece of a public method, but not taking it to conclusion - I should keep going and move the method its own class!</p>
+
+<p>I move a private method into its own class, and I am forced to think about its dependencies and API. Now it&rsquo;s automatically testable and re-composable.</p>
+
+<p>Use cases:</p>
+
+<ul>
+<li>Private method with no dependencies - just move the method to a new class</li>
+<li>Private method with dependencies on services - move the method to a new class, rationalize its dependiencies, use instances as a dependency of the parent.</li>
+<li>Private method that uses mutates state - move the method to a new class, state mutation commands delivered from the method and interpreted by the parent.</li>
+</ul>
+
+
+<h2>Too many public methods are a code smell</h2>
+
+<p>When I have a class with a load of public instance methods, it&rsquo;s unlikely that they all operate on the same state, or depend on the same objects.</p>
+
+<p>If the methods don&rsquo;t operate on the same thing, then they don&rsquo;t belong together.</p>
+
+<p>When I am thinking about the dependencies that I need to create an object (e.g. for testing), if all the dependencies are not used by all the methods, then maybe a red light should be flashing in my brain.</p>
+
+<p>I see this a lot in ASP.NET MVC controller, where I have a controller that is notionally <em>about</em> a class of entity, but the sets of method depend on different things (database access, report outputs, email). Break it up.</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ios 7 | jmcd.io]]></title>
+  <link href="http://jmcd.github.io/blog/categories/ios-7/atom.xml" rel="self"/>
+  <link href="http://jmcd.github.io/"/>
+  <updated>2015-03-19T10:44:13+00:00</updated>
+  <id>http://jmcd.github.io/</id>
+  <author>
+    <name><![CDATA[John McDowall]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[My Two Favourite Parts of the iOS 7 SDK]]></title>
+    <link href="http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/"/>
+    <updated>2013-09-18T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk</id>
+    <content type="html"><![CDATA[<h2>Notifications and background downloading</h2>
+
+<p>Prior to iOS 7, an inactive app is ignorant of notifications sent to the device. With iOS 7, an app can register to be woken when a notification arrives, in order to download data in the background. Imagine the you have a messaging app on your iOS 6 phone:</p>
+
+<ul>
+<li>Receive notification of new message</li>
+<li>You tap notification to launch app</li>
+<li><strong>You wait</strong> for app to connect to its server and download the message</li>
+</ul>
+
+
+<p>With iOS 7:</p>
+
+<ul>
+<li>Receive notification of new message</li>
+<li>App starts up in the background and downloads message from its server</li>
+<li>You tap notification to launch app, and <strong>the message is already there</strong></li>
+</ul>
+
+
+<p>An app running on iOS 7 can also request that the system give it regular background execution time to perform downloads. When you launch the Facebook app in the future, you may find that you do not have to wait for new posts to be downloaded, because the app has already downloaded them in the background.</p>
+
+<p>If an app takes too long to download data in the background, uses too much power or data it will be given less opportunity to download in the future.</p>
+
+<h2>Sprite Kit</h2>
+
+<p>Most developers have an idea for a game, but have no idea how to write it. Game development is a whole different world from the type of business or web work that developers tend to do.</p>
+
+<p>Sprite Kit is a framework that assists a developer creating 2D games by providing game-loop, facilities for graphics rendering, physics simulations and manipulation of in game objects. In short, it takes a lot of the grunt work out of creating a game.</p>
+
+<p>Here I wrote a very small app using Sprite Kit. You tap the screen to set a car driving from the left of the screen. The car accelerates up to a maximum of 30mph, and maybe crashes into other cars. <a href="https://gist.github.com/jmcd/6605801#file-myscene-m">The code I had to write is less than 80 lines long</a>, Sprite Kit handles all the heavy lifting, leaving the developer free to concentrate on game logic.</p>
+
+<p><video  preload='metadata' controls ><source src='/vid/SpriteKitDemo.mp4' type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'></video></p>
+
+<p>Expect to see a lot of developers writing games where previously the barrier of entry was too high.</p>
+]]></content>
+  </entry>
+  
+</feed>

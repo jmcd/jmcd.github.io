@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Objective-c | jmcd.io]]></title>
+  <link href="http://jmcd.github.io/blog/categories/objective-c/atom.xml" rel="self"/>
+  <link href="http://jmcd.github.io/"/>
+  <updated>2015-03-19T10:44:13+00:00</updated>
+  <id>http://jmcd.github.io/</id>
+  <author>
+    <name><![CDATA[John McDowall]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[A Primer on Bluetooth Low Energy, and It's Application in iOS]]></title>
+    <link href="http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/"/>
+    <updated>2014-02-20T00:00:00+00:00</updated>
+    <id>http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios</id>
+    <content type="html"><![CDATA[<h2>What is it?</h2>
+
+<p>Bluetooth Low Energy (BLE) is a technology for allowing devices to communicate in a way that is highly optimized for conserving battery power.</p>
+
+<p>BLE devices include things like FitBit trackers, heart-rate monitors, set-top-boxes, and fancy thermostats. The Internet of things. Very exciting possibilities!</p>
+
+<p>BLE defined in the Bluetooth 4.0 specification, and is not compatible with older Bluetooth architectures.</p>
+
+<p>BLE has far lower bit-rates than older technologies, and different radio setup. This means much better battery life for devices.</p>
+
+<h2>The central and the peripheral</h2>
+
+<p>When a BLE is connected to the other, one is termed the peripheral, the other is termed the central. The central is the consumer of data from the peripheral. For example, when you connect your iPhone to your FitBit, the iPhone is the central and the FitBit is the peripheral.</p>
+
+<p>A central may have many peripherals, but a peripheral may (normally) only have one central.</p>
+
+<p>The BLE device (e.g. FitBit) continually broadcasts advertisement packets. When another device (e.g. iPhone) wants to make a connection, it scans for these advertisement packets. Once an advertisement packet is discovered, a connection request is sent to the broadcaster. The broadcaster accepts the connection request, and the pair are peripheral and central.</p>
+
+<h2>Services and characteristics</h2>
+
+<p>Communication between connected central and peripheral takes place by reading and writing of characteristic values exposed by the peripheral. Characteristics are grouped into services. Services and characteristics are identified by unique identifiers. Characteristic values are 16 bytes long.</p>
+
+<p><img src="/img/blutoot.png" title="hierarchy of device" ></p>
+
+<p>A central can directly read the value of a characteristic, or it can register with the peripheral to receive updates when the value changes.</p>
+
+<h2>iOS and CoreBluetooth</h2>
+
+<p>The iOS SDK abstracts the complexities of BLE workings with the CoreBluetooth framework. The main players:</p>
+
+<ul>
+<li>CBCentralManager - discovers and connects to peripherals</li>
+<li>CBPeripheral - represents a peripheral, discovers services, discovers characteristics</li>
+<li>CBService - represents a service of a peripheral</li>
+<li>CBCharacteristic - represents a characteristic of a service</li>
+</ul>
+
+
+<p>Discovery of peripherals, services, and characteristics all happen through asynchronous operations. Completions are signaled via callbacks on delegate implementations.</p>
+
+<h2>An basic example</h2>
+
+<p>In this example we will discover a fictional thermostat, and through a service:</p>
+
+<ol>
+<li>set the threshold temperature</li>
+<li>ask to be notified of changes in the ambient temperature</li>
+</ol>
+
+
+<p>Discovery of peripherals is done by implementing CBCentralManagerDelegate, then scanning with a CBCentralManager. Before attempting to connect to a device, work out if you should, either by UUID, name, or user selection.</p>
+
+<pre><code class="objc">- (void)discoverPerhiperals
+{
+ CBCentralManager *central = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+ [self scan:central];
+
+ return YES;
+}
+
+#pragma mark - CBCentralManagerDelegate
+
+- (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI 
+{
+ BOOL shouldConnect = /* your code to determine if you should try to connect to this device */
+
+ if (shouldConnect) {
+  [central stopScan];
+  [central connectPeripheral:peripheral options:nil];
+ }
+}
+
+- (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral 
+{
+ [self discoverServicesForPeripheral:peripheral];
+}
+</code></pre>
+
+<p>Once you are connected to a perhiperal, you can discover its services. You can discover services by UUID, or discover all the services a perhiperal hosts. Typically you will want to discover one or two well known services by id. - this is faster than discovering all services.</p>
+
+<p>BLE UUIDs are 128 bit and have the form 0000nnnn-0000-1000-8000-00805f9b34fb, often you will see them abbreviated to 0xnnnn. (See page 216 of the  <a href="https://www.bluetooth.org/docman/handlers/downloaddoc.ashx?doc_id=229737">Bluetooth Specification V4.0 [Vol3]</a>)</p>
+
+<pre><code class="objc">{
+ _thermostatServiceUuid = [CBUUID UUIDWithString:@"0000nnnn-0000-1000-8000-00805f9b34fb"];
+ _heatingTurnsOnTemperatureCharacteristicUuid = CBUUID UUIDWithString:@"0000nnnn-0000-1000-8000-00805f9b34fb"];
+ _currentAmbientTemperatureCharacteristicUuid = CBUUID UUIDWithString:@"0000nnnn-0000-1000-8000-00805f9b34fb"];
+}
+
+- (void)discoverServicesForPerhiperal:(CBPeripheral*)peripheral
+{
+ peripheral.delegate = self;
+ [peripheral discoverServices:@[_thermostatServiceUuid]];
+}
+
+
+#pragma mark - CBPeripheralDelegate
+
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error 
+{
+ CBService *service = peripheral.services[0];
+ [peripheral discoverCharacteristics:@[_heatingTurnsOnTemperatureCharacteristicUuid, _currentAmbientTemperatureCharacteristicUuid] forService:service];
+}
+
+
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error {
+
+ for (CBCharacteristic *characteristic in service.characteristics) {
+
+  if ([characteristic.UUID isEqual:_heatingTurnsOnTemperatureCharacteristicUuid]) {
+   // Change the temperature at which the heating turns on
+   NSData *data = /* encode 16 bytes of data */
+   [_peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
+  }
+
+  if ([characteristic.UUID isEqual:_currentAmbientTemperatureCharacteristicUuid]) {
+   // Register to receive notifications of changes to ambient temperature
+   [peripheral setNotifyValue:YES forCharacteristic:characteristic];
+  }
+ }
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
+ NSLog(@"didUpdateValueForCharacteristic");
+ if ([characteristic.UUID isEqual:_currentAmbientTemperatureCharacteristicUuid]) {
+
+  NSData *data = characteristic.value;
+  NSLog(@"The current temperature is @%", /* decode 16 bytes of data */)
+ }
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[My Two Favourite Parts of the iOS 7 SDK]]></title>
+    <link href="http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/"/>
+    <updated>2013-09-18T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk</id>
+    <content type="html"><![CDATA[<h2>Notifications and background downloading</h2>
+
+<p>Prior to iOS 7, an inactive app is ignorant of notifications sent to the device. With iOS 7, an app can register to be woken when a notification arrives, in order to download data in the background. Imagine the you have a messaging app on your iOS 6 phone:</p>
+
+<ul>
+<li>Receive notification of new message</li>
+<li>You tap notification to launch app</li>
+<li><strong>You wait</strong> for app to connect to its server and download the message</li>
+</ul>
+
+
+<p>With iOS 7:</p>
+
+<ul>
+<li>Receive notification of new message</li>
+<li>App starts up in the background and downloads message from its server</li>
+<li>You tap notification to launch app, and <strong>the message is already there</strong></li>
+</ul>
+
+
+<p>An app running on iOS 7 can also request that the system give it regular background execution time to perform downloads. When you launch the Facebook app in the future, you may find that you do not have to wait for new posts to be downloaded, because the app has already downloaded them in the background.</p>
+
+<p>If an app takes too long to download data in the background, uses too much power or data it will be given less opportunity to download in the future.</p>
+
+<h2>Sprite Kit</h2>
+
+<p>Most developers have an idea for a game, but have no idea how to write it. Game development is a whole different world from the type of business or web work that developers tend to do.</p>
+
+<p>Sprite Kit is a framework that assists a developer creating 2D games by providing game-loop, facilities for graphics rendering, physics simulations and manipulation of in game objects. In short, it takes a lot of the grunt work out of creating a game.</p>
+
+<p>Here I wrote a very small app using Sprite Kit. You tap the screen to set a car driving from the left of the screen. The car accelerates up to a maximum of 30mph, and maybe crashes into other cars. <a href="https://gist.github.com/jmcd/6605801#file-myscene-m">The code I had to write is less than 80 lines long</a>, Sprite Kit handles all the heavy lifting, leaving the developer free to concentrate on game logic.</p>
+
+<p><video  preload='metadata' controls ><source src='/vid/SpriteKitDemo.mp4' type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'></video></p>
+
+<p>Expect to see a lot of developers writing games where previously the barrier of entry was too high.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Handling MKMapView Annotation Pins on the Same Coordinate]]></title>
+    <link href="http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/"/>
+    <updated>2013-01-10T00:00:00+00:00</updated>
+    <id>http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate</id>
+    <content type="html"><![CDATA[<p>A component of a project I am working on displays shop locations on a map. A problem arises when the shops are located at a shopping centre or mall - the shops are invariably geo-coded to the same latitude-longitude coordinates.</p>
+
+<p>When the shops have the same coordinates, the annotations (pins) display in the exact same location on the map. This gives the appearance of there only being one pin, and indeed, the user can only tap one pin.</p>
+
+<p>To overcome this, we implemented a routine to re-place the pins at new coordinates surrounding the contested coordinate.</p>
+
+<p><img src="/img/Screen-Shot-2013-01-10-at-14.32.11.png" title="pins surrounding coord" ></p>
+
+<p><em>tl;dr get the full <a href="https://gist.github.com/4502302">code</a>.</em></p>
+
+<p>First we group the annotations by coordinate.</p>
+
+<pre><code class="objc">for (id&lt;MKAnnotation&gt; pin in annotations) {
+
+    CLLocationCoordinate2D coordinate = pin.coordinate;
+    NSValue *coordinateValue = [NSValue valueWithBytes:&amp;#038;coordinate objCType:@encode(CLLocationCoordinate2D)];
+
+    NSMutableArray *annotationsAtLocation = coordinateValuesToAnnotations[coordinateValue];
+    if (!annotationsAtLocation) {
+        annotationsAtLocation = [NSMutableArray array];
+        coordinateValuesToAnnotations[coordinateValue] = annotationsAtLocation;
+    }
+
+    [annotationsAtLocation addObject:pin];
+}
+</code></pre>
+
+<p>This routine produces a dictionary keyed on <code>NSValue</code>s containing a copy of the coordinate (you can&rsquo;t key a <code>NSDictionary</code> on a c-type). The value of a entry in the dictionary is a <code>NSArray</code> of annotations at that coordinate.</p>
+
+<p>You can see this only matches on exactly equal coordinates, but it would be relatively straightforward to group on coordinates that were close by calculating the distance between them.</p>
+
+<p>Next we enumerate the dictionary looking for locations that have more than one annotation. When we find one, we reposition the annotations.</p>
+
+<pre><code class="objc">double distance = 3 * annotations.count / 2.0;
+double radiansBetweenAnnotations = (M_PI * 2) / annotations.count;
+
+for (int i = 0; i &lt; annotations.count; i++) {
+
+    double heading = radiansBetweenAnnotations * i;
+    CLLocationCoordinate2D newCoordinate = [self calculateCoordinateFrom:coordinate onBearing:heading atDistance:distance];
+
+    id &lt;MKAnnotation&gt; annotation = annotations[i];
+    annotation.coordinate = newCoordinate;
+}
+</code></pre>
+
+<p>The pins are arranged in a circle around the contested point by dividing the circle by the number of contesting annotations. You can see that the distance from the contested coordinate to the new coordinate is a function of the number of annotations contesting - if there are few pins contesting the coordinate, then we have space to place the pins close to the coordinate.</p>
+
+<p>Finally, the new coordinate is calculated using an implementation of the function from this excellent resource: <a href="http://www.movable-type.co.uk/scripts/latlong.html">Destination point given distance and bearing from start point</a>.</p>
+
+<pre><code class="objc">+ (CLLocationCoordinate2D)calculateCoordinateFrom:(CLLocationCoordinate2D)coordinate onBearing:(double)bearingInRadians atDistance:(double)distanceInMetres {
+
+    double coordinateLatitudeInRadians = coordinate.latitude * M_PI / 180;
+    double coordinateLongitudeInRadians = coordinate.longitude * M_PI / 180;
+
+    double distanceComparedToEarth = distanceInMetres / 6378100;
+
+    double resultLatitudeInRadians = asin(sin(coordinateLatitudeInRadians) * cos(distanceComparedToEarth) + cos(coordinateLatitudeInRadians) * sin(distanceComparedToEarth) * cos(bearingInRadians));
+    double resultLongitudeInRadians = coordinateLongitudeInRadians + atan2(sin(bearingInRadians) * sin(distanceComparedToEarth) * cos(coordinateLatitudeInRadians), cos(distanceComparedToEarth) - sin(coordinateLatitudeInRadians) * sin(resultLatitudeInRadians));
+
+    CLLocationCoordinate2D result;
+    result.latitude = resultLatitudeInRadians * 180 / M_PI;
+    result.longitude = resultLongitudeInRadians * 180 / M_PI;
+    return result;
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

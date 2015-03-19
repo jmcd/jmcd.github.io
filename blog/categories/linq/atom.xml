@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Linq | jmcd.io]]></title>
+  <link href="http://jmcd.github.io/blog/categories/linq/atom.xml" rel="self"/>
+  <link href="http://jmcd.github.io/"/>
+  <updated>2015-03-19T10:44:13+00:00</updated>
+  <id>http://jmcd.github.io/</id>
+  <author>
+    <name><![CDATA[John McDowall]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Selecting Denormalized Child Nodes and Parents From Tree With Linq]]></title>
+    <link href="http://jmcd.github.io/blog/2009/08/05/selecting-denormalized-child-nodes-and-parents-from-tree-with-linq/"/>
+    <updated>2009-08-05T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2009/08/05/selecting-denormalized-child-nodes-and-parents-from-tree-with-linq</id>
+    <content type="html"><![CDATA[<p>Problem: You have a collection of objects.&#160; Each object has a number of children.&#160; You want all the children matching a criteria, AND the parent.&#160; The child does not reference the parent.</p>
+
+<p>Solution: You can use Linq to</p>
+
+<ul>
+<li>From the context of all the parents, select all the children with the “SelectMany” method.</li>
+<li>Construct and select instances of an anonymous type combining the parent and child.&#160; (You can do this because the context is that of the parent.)</li>
+<li>Apply your filtering criteria.</li>
+</ul>
+
+
+<p>Example: Select the five most recently modified children (and parent)</p>
+
+<pre><code class="csharp">class Program
+{
+    static void Main()
+    {
+        var allParents = new StupidFactory().ConstructParents(100);
+
+        var fiveMostRecentChildrenAndParent = allParents
+            .SelectMany(parent =&gt; parent.Children)
+            .Select(child =&gt; new { Child = child, Parent = allParents.Where(parent =&gt; parent.Children.Contains(child)).Single() })
+            .OrderByDescending(anonymousCombo =&gt; anonymousCombo.Child.LastModified)
+            .Take(5);
+
+        foreach (var childAndParent in fiveMostRecentChildrenAndParent)
+        {
+            Console.WriteLine("{0} modified on {1} (belongs to {2})", childAndParent.Child.Name, childAndParent.Child.LastModified.ToShortDateString(), childAndParent.Parent.Name);
+        }
+    } 
+}
+
+
+public abstract class Entity
+{
+    public string Name;
+}
+
+public class Parent : Entity
+{
+    public List&lt;Child&gt; Children = new List&lt;Child&gt;();
+}
+
+public class Child : Entity
+{
+    public DateTime LastModified;
+}
+
+public class StupidFactory
+{
+    private readonly Random _random = new Random();
+    private int _childCount;
+    private int _parentCount;
+
+    private Child ConstructChild()
+    {
+        return new Child { Name = "Child_" + _childCount++, LastModified = DateTime.Now.AddDays(-_random.Next(0, 365)) };
+    }
+
+    private Parent ConstructParent()
+    {
+        var result = new Parent { Name = "Parent_" + _parentCount++ };
+        var childCount = _random.Next(0, 11);
+        for (var i = 0; i &lt; childCount; i++)
+        {
+            result.Children.Add(ConstructChild());
+        }
+        return result;
+    }
+
+    public IList&lt;Parent&gt; ConstructParents(int count)
+    {
+        var result = new List&lt;Parent&gt;();
+        for (var i = 0; i &lt; count; i++)
+        {
+            result.Add(ConstructParent());
+        }
+        return result;
+    }
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

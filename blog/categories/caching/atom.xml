@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Caching | jmcd.io]]></title>
+  <link href="http://jmcd.github.io/blog/categories/caching/atom.xml" rel="self"/>
+  <link href="http://jmcd.github.io/"/>
+  <updated>2015-03-19T10:44:13+00:00</updated>
+  <id>http://jmcd.github.io/</id>
+  <author>
+    <name><![CDATA[John McDowall]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Caching the Result of Arbitrary Function Calls]]></title>
+    <link href="http://jmcd.github.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls/"/>
+    <updated>2009-08-05T00:00:00+01:00</updated>
+    <id>http://jmcd.github.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls</id>
+    <content type="html"><![CDATA[<p>Here is the approach I took to performing the result of a method call, which is done in a reusable way which may be interesting.  Instead of calling my method normally like this:</p>
+
+<pre><code class="csharp">var service = new MyService();
+var time = service.GetTime();
+</code></pre>
+
+<p>I wrap that call in a call to the cache:</p>
+
+<pre><code class="csharp">var service = new MyService();
+var time = cache.Get(x =&gt; x.GetTime(), service, tenSeconds);
+</code></pre>
+
+<p>Inside the Cache implementation I have a method Get, which wraps up the method call in a wrapping function, then passes this parcel to the InvokeOrGetFromCache method:</p>
+
+<p>There is a variant of “Get” for every variant of Func&lt;>.</p>
+
+<p>The InvokeOrGetFromCache is the meat of the cache class.&#160; It controls access two the actual store of objects (a dictionary of function to result), and a collection of pending functions (a hashset).</p>
+
+<p>When requesting a result for a function from the cache, the pending set is first checked.&#160; If the job is already pending, the requesting thread yields until the job is done.</p>
+
+<p>When a function’s result is not present in the cache, it is added to the pending functions set.&#160; The function is invoked, its result is added to the cache, then the function is removed from the pending set.</p>
+
+<p><em>NB</em> As you can see, the key to the cache is just the function itself – this means that calls with different instances/values will result in the same result.&#160; This is fine for my purposes, but may not be OK for you.&#160; In this case it would be fairly straightforward to build a new key which incorporated the values as well as the function itself.</p>
+
+<pre><code class="csharp">public class Cache
+{
+    private readonly IDictionary&lt;object, CachedItem&gt; _registry = new Dictionary&lt;object, CachedItem&gt;();
+    private readonly ICollection&lt;object&gt; _pending = new HashSet&lt;object&gt;();
+
+    public TResult Get&lt;T, TResult&gt;(Func&lt;T, TResult&gt; func, T t, TimeSpan maximumAge)
+    {
+        return InvokeOrGetFromCache(func, maximumAge, () =&gt; func.Invoke(t));
+    }
+
+    public TResult Get&lt;T1, T2, TResult&gt;(Func&lt;T1, T2, TResult&gt; func, T1 t1, T2 t2, TimeSpan maximumAge)
+    {
+        return InvokeOrGetFromCache(func, maximumAge, () =&gt; func.Invoke(t1, t2));
+    }
+
+    public TResult Get&lt;T1, T2, T3, TResult&gt;(Func&lt;T1, T2, T3, TResult&gt; func, T1 t1, T2 t2, T3 t3, TimeSpan maximumAge)
+    {
+        return InvokeOrGetFromCache(func, maximumAge, () =&gt; func.Invoke(t1, t2, t3));
+    }
+
+    public TResult Get&lt;T1, T2, T3, T4, TResult&gt;(Func&lt;T1, T2, T3, T4, TResult&gt; func, T1 t1, T2 t2, T3 t3, T4 t4, TimeSpan maximumAge)
+    {
+        return InvokeOrGetFromCache(func, maximumAge, () =&gt; func.Invoke(t1, t2, t3, t4));
+    }
+
+    private TResult InvokeOrGetFromCache&lt;TResult&gt;(object cacheKey, TimeSpan maximumAge, Func&lt;TResult&gt; wrapperFunc)
+    {
+        var now = DateTime.Now;
+
+        WaitForPendingInvokeToComplete(cacheKey);
+
+        lock(_registry)
+        {
+            if (_registry.ContainsKey(cacheKey))
+            {
+                var result = _registry[cacheKey];
+                if (result.TimeOfConstruction.Add(maximumAge) &gt; now)
+                {
+                    return (TResult) result.Value;
+                }
+            }
+        }
+
+        return Invoke(cacheKey, now, wrapperFunc);
+    }
+
+    private TResult Invoke&lt;TResult&gt;(object cacheKey, DateTime now, Func&lt;TResult&gt; wrapperFunc)
+    {
+        _pending.Add(cacheKey);
+        var value = wrapperFunc.Invoke();
+        _registry[cacheKey] = new CachedItem(now, value);
+        _pending.Remove(cacheKey);
+        return value;
+    }
+
+    private void WaitForPendingInvokeToComplete(object cacheKey)
+    {
+        while (_pending.Contains(cacheKey))
+        {
+            Thread.Sleep(0);
+        }
+    }
+
+    private class CachedItem
+    {
+        public CachedItem(DateTime timeOfConstruction, object value)
+        {
+            TimeOfConstruction = timeOfConstruction;
+            Value = value;
+        }
+
+        public DateTime TimeOfConstruction { get; private set; }
+        public object Value { get; private set; }
+    }
+}
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
