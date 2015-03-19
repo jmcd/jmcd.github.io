@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://jmcd.io/blog/2015/03/18/private-methods-are-a-code-smell/</loc>
+    <loc>http://jmcd.io/blog/2015/03/18/method-access-modifiers-as-code-smells/</loc>
     <lastmod>2015-03-18T21:11:01+00:00</lastmod>
-  </url>
-  <url>
-    <loc>http://jmcd.io/blog/2015/03/03/method-access-modifiers-as-code-smells/</loc>
-    <lastmod>2015-03-03T16:11:01+00:00</lastmod>
   </url>
   <url>
     <loc>http://jmcd.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/</loc>
@@ -42,10 +38,10 @@
   </url>
   <url>
     <loc>http://jmcd.io/blog/archives/</loc>
-    <lastmod>2015-03-19T10:52:31+00:00</lastmod>
+    <lastmod>2015-03-19T10:57:13+00:00</lastmod>
   </url>
   <url>
     <loc>http://jmcd.io/</loc>
-    <lastmod>2015-03-19T10:52:31+00:00</lastmod>
+    <lastmod>2015-03-19T10:57:13+00:00</lastmod>
   </url>
 </urlset>
