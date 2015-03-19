@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Opinion | jmcd.io]]></title>
-  <link href="http://jmcd.github.io/blog/categories/opinion/atom.xml" rel="self"/>
-  <link href="http://jmcd.github.io/"/>
-  <updated>2015-03-19T10:44:13+00:00</updated>
-  <id>http://jmcd.github.io/</id>
+  <link href="http://jmcd.io/blog/categories/opinion/atom.xml" rel="self"/>
+  <link href="http://jmcd.io/"/>
+  <updated>2015-03-19T10:52:31+00:00</updated>
+  <id>http://jmcd.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Method Access Modifiers as Code Smells]]></title>
-    <link href="http://jmcd.github.io/blog/2015/03/18/private-methods-are-a-code-smell/"/>
+    <link href="http://jmcd.io/blog/2015/03/18/private-methods-are-a-code-smell/"/>
     <updated>2015-03-18T21:11:01+00:00</updated>
-    <id>http://jmcd.github.io/blog/2015/03/18/private-methods-are-a-code-smell</id>
+    <id>http://jmcd.io/blog/2015/03/18/private-methods-are-a-code-smell</id>
     <content type="html"><![CDATA[<p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
 
 <h2>Private methods are a code smell</h2>
@@ -51,9 +51,9 @@
   
   <entry>
     <title type="html"><![CDATA[Method Access Modifiers as Code Smells]]></title>
-    <link href="http://jmcd.github.io/blog/2015/03/03/method-access-modifiers-as-code-smells/"/>
+    <link href="http://jmcd.io/blog/2015/03/03/method-access-modifiers-as-code-smells/"/>
     <updated>2015-03-03T16:11:01+00:00</updated>
-    <id>http://jmcd.github.io/blog/2015/03/03/method-access-modifiers-as-code-smells</id>
+    <id>http://jmcd.io/blog/2015/03/03/method-access-modifiers-as-code-smells</id>
     <content type="html"><![CDATA[<p>There&rsquo;s a couple of patterns that I&rsquo;ve noticed in my own code.</p>
 
 <h2>Private methods are a code smell</h2>

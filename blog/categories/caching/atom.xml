@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Caching | jmcd.io]]></title>
-  <link href="http://jmcd.github.io/blog/categories/caching/atom.xml" rel="self"/>
-  <link href="http://jmcd.github.io/"/>
-  <updated>2015-03-19T10:44:13+00:00</updated>
-  <id>http://jmcd.github.io/</id>
+  <link href="http://jmcd.io/blog/categories/caching/atom.xml" rel="self"/>
+  <link href="http://jmcd.io/"/>
+  <updated>2015-03-19T10:52:31+00:00</updated>
+  <id>http://jmcd.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Caching the Result of Arbitrary Function Calls]]></title>
-    <link href="http://jmcd.github.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls/"/>
+    <link href="http://jmcd.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls/"/>
     <updated>2009-08-05T00:00:00+01:00</updated>
-    <id>http://jmcd.github.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls</id>
+    <id>http://jmcd.io/blog/2009/08/05/caching-the-result-of-arbitrary-function-calls</id>
     <content type="html"><![CDATA[<p>Here is the approach I took to performing the result of a method call, which is done in a reusable way which may be interesting.  Instead of calling my method normally like this:</p>
 
 <pre><code class="csharp">var service = new MyService();

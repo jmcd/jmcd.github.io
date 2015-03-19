@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Expressions | jmcd.io]]></title>
-  <link href="http://jmcd.github.io/blog/categories/expressions/atom.xml" rel="self"/>
-  <link href="http://jmcd.github.io/"/>
-  <updated>2015-03-19T10:44:13+00:00</updated>
-  <id>http://jmcd.github.io/</id>
+  <link href="http://jmcd.io/blog/categories/expressions/atom.xml" rel="self"/>
+  <link href="http://jmcd.io/"/>
+  <updated>2015-03-19T10:52:31+00:00</updated>
+  <id>http://jmcd.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Using Expression Trees to Avoid String Literal References]]></title>
-    <link href="http://jmcd.github.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/"/>
+    <link href="http://jmcd.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references/"/>
     <updated>2009-06-30T00:00:00+01:00</updated>
-    <id>http://jmcd.github.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references</id>
+    <id>http://jmcd.io/blog/2009/06/30/using-expression-trees-to-avoid-string-literal-references</id>
     <content type="html"><![CDATA[<p>Often a developer will want to mirror the names of properties or methods of a class in some related dynamic resource that needs to bind to named members of the class. This happens a lot in user interface and serialization scenarios.</p>
 
 <p>For example, a user interface may need to populate the value of a text-box with a value dynamically looked up from a property on an instance of a class.  Typically, this is done with a hard-coded string literal.</p>

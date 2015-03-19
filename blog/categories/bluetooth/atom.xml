@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Bluetooth | jmcd.io]]></title>
-  <link href="http://jmcd.github.io/blog/categories/bluetooth/atom.xml" rel="self"/>
-  <link href="http://jmcd.github.io/"/>
-  <updated>2015-03-19T10:44:13+00:00</updated>
-  <id>http://jmcd.github.io/</id>
+  <link href="http://jmcd.io/blog/categories/bluetooth/atom.xml" rel="self"/>
+  <link href="http://jmcd.io/"/>
+  <updated>2015-03-19T10:52:31+00:00</updated>
+  <id>http://jmcd.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[A Primer on Bluetooth Low Energy, and It's Application in iOS]]></title>
-    <link href="http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/"/>
+    <link href="http://jmcd.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios/"/>
     <updated>2014-02-20T00:00:00+00:00</updated>
-    <id>http://jmcd.github.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios</id>
+    <id>http://jmcd.io/blog/2014/02/20/a-primer-on-bluetooth-low-energy-and-its-application-in-ios</id>
     <content type="html"><![CDATA[<h2>What is it?</h2>
 
 <p>Bluetooth Low Energy (BLE) is a technology for allowing devices to communicate in a way that is highly optimized for conserving battery power.</p>

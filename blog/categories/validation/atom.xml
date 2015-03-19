@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Validation | jmcd.io]]></title>
-  <link href="http://jmcd.github.io/blog/categories/validation/atom.xml" rel="self"/>
-  <link href="http://jmcd.github.io/"/>
-  <updated>2015-03-19T10:44:13+00:00</updated>
-  <id>http://jmcd.github.io/</id>
+  <link href="http://jmcd.io/blog/categories/validation/atom.xml" rel="self"/>
+  <link href="http://jmcd.io/"/>
+  <updated>2015-03-19T10:52:31+00:00</updated>
+  <id>http://jmcd.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Automatic Model Validation With ASP.NET MVC, xVal, Castle and a Custom Binder]]></title>
-    <link href="http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/"/>
+    <link href="http://jmcd.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a/"/>
     <updated>2009-04-07T00:00:00+01:00</updated>
-    <id>http://jmcd.github.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a</id>
+    <id>http://jmcd.io/blog/2009/04/07/automatic-model-validation-with-asp-net-mvc-xval-castle-and-a</id>
     <content type="html"><![CDATA[<p>There are several stages at which you can, and possibly should, validate data inputted to your application.  This post deals with server-side validation of user input before it reaches the controller.  It’s arguably not the controller’s responsibility to validate user input, and it’s nice to have a clean controller that can focus on its responsibility.  In this solution we tap into the ASP.NET MVC Model Binder framework so our controllers can count on the model having been validated before any of the action methods are called.</p>
 
 <p><a href="http://xval.codeplex.com/">xVal</a> is a nice validation framework written by <a href="http://blog.codeville.net/">Steve Sanderson</a>.  It can work with a bunch of server-side and client-side validation products.  I this case I’m going to use the server-side <a href="http://erichauser.net/2008/08/28/castle-validator-enhancements/">Castle Validator</a>.</p>

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Wii-u | jmcd.io]]></title>
-  <link href="http://jmcd.github.io/blog/categories/wii-u/atom.xml" rel="self"/>
-  <link href="http://jmcd.github.io/"/>
-  <updated>2015-03-19T10:44:13+00:00</updated>
-  <id>http://jmcd.github.io/</id>
+  <link href="http://jmcd.io/blog/categories/wii-u/atom.xml" rel="self"/>
+  <link href="http://jmcd.io/"/>
+  <updated>2015-03-19T10:52:31+00:00</updated>
+  <id>http://jmcd.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Stop It Nintendo, No, You're Hurting Me]]></title>
-    <link href="http://jmcd.github.io/blog/2013/01/07/stop-it-nintendo-no-you're-hurting-me/"/>
+    <link href="http://jmcd.io/blog/2013/01/07/stop-it-nintendo-no-you're-hurting-me/"/>
     <updated>2013-01-07T00:00:00+00:00</updated>
-    <id>http://jmcd.github.io/blog/2013/01/07/stop-it-nintendo-no-you&#8217;re-hurting-me</id>
+    <id>http://jmcd.io/blog/2013/01/07/stop-it-nintendo-no-you&#8217;re-hurting-me</id>
     <content type="html"><![CDATA[<p>In the early nineties I bought a SNES with Super Mario World. You could go from a boxed console to playing a game in minutes - all you had to do was plug a few cables in.</p>
 
 <p>Yesterday I got a Wii U. The setup process was so long winded and exasperating that it would make the calmest fanboy wonder whether there is any Nintendo employee with the responsibility of &ldquo;giving a fuck about user experience&rdquo;.</p>

@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Cocoa Touch | jmcd.io]]></title>
-  <link href="http://jmcd.github.io/blog/categories/cocoa-touch/atom.xml" rel="self"/>
-  <link href="http://jmcd.github.io/"/>
-  <updated>2015-03-19T10:44:13+00:00</updated>
-  <id>http://jmcd.github.io/</id>
+  <link href="http://jmcd.io/blog/categories/cocoa-touch/atom.xml" rel="self"/>
+  <link href="http://jmcd.io/"/>
+  <updated>2015-03-19T10:52:31+00:00</updated>
+  <id>http://jmcd.io/</id>
   <author>
     <name><![CDATA[John McDowall]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[My Two Favourite Parts of the iOS 7 SDK]]></title>
-    <link href="http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/"/>
+    <link href="http://jmcd.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk/"/>
     <updated>2013-09-18T00:00:00+01:00</updated>
-    <id>http://jmcd.github.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk</id>
+    <id>http://jmcd.io/blog/2013/09/18/my-two-favourite-parts-of-the-ios7-sdk</id>
     <content type="html"><![CDATA[<h2>Notifications and background downloading</h2>
 
 <p>Prior to iOS 7, an inactive app is ignorant of notifications sent to the device. With iOS 7, an app can register to be woken when a notification arrives, in order to download data in the background. Imagine the you have a messaging app on your iOS 6 phone:</p>
@@ -58,9 +58,9 @@
   
   <entry>
     <title type="html"><![CDATA[Handling MKMapView Annotation Pins on the Same Coordinate]]></title>
-    <link href="http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/"/>
+    <link href="http://jmcd.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/"/>
     <updated>2013-01-10T00:00:00+00:00</updated>
-    <id>http://jmcd.github.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate</id>
+    <id>http://jmcd.io/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate</id>
     <content type="html"><![CDATA[<p>A component of a project I am working on displays shop locations on a map. A problem arises when the shops are located at a shopping centre or mall - the shops are invariably geo-coded to the same latitude-longitude coordinates.</p>
 
 <p>When the shops have the same coordinates, the annotations (pins) display in the exact same location on the map. This gives the appearance of there only being one pin, and indeed, the user can only tap one pin.</p>
