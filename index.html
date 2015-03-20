@@ -9,7 +9,7 @@
   <meta name="author" content="John McDowall">
 
   
-  <meta name="description" content="There&rsquo;s a couple of anti-patterns that I&rsquo;ve noticed in my own code. Private methods are a code smell Private methods are not inherently &hellip;">
+  <meta name="description" content="I recently came across the interview coding test for modeling a &ldquo;Robot Wars&rdquo; game. The same test as this chap has solved here. I started &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -65,6 +65,145 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/20/dirty-wars/">Robot Wars Interview Question</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-20T16:10:19+00:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I recently came across the interview coding test for modeling a &ldquo;Robot Wars&rdquo; game. <a href="https://github.com/ninjanye/RobotWars">The same test as this chap has solved here.</a></p>
+
+<p>I started off doing it The Right Way (tests, lexer, parser), but then thought &ldquo;Wouldn&rsquo;t it be fun to write this as small as possible? You know, just for fun?&rdquo;</p>
+
+<p>So I wrote this obfuscated horror. It would not get you hired anywhere, and it might get you fired, but it was a lot of fun to write.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="k">class</span> <span class="nc">DirtyWar</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Run</span><span class="p">(</span><span class="kt">string</span> <span class="n">input</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">lines</span> <span class="p">=</span> <span class="n">input</span><span class="p">.</span><span class="n">Split</span><span class="p">(</span><span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="sc">&#39;\n&#39;</span><span class="p">,</span> <span class="sc">&#39;\r&#39;</span><span class="p">},</span> <span class="n">StringSplitOptions</span><span class="p">.</span><span class="n">RemoveEmptyEntries</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Action</span><span class="p">&lt;</span><span class="n">Action</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;&gt;</span> <span class="n">x2</span> <span class="p">=</span> <span class="n">a</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="n">a</span><span class="p">(</span><span class="m">0</span><span class="p">);</span> <span class="n">a</span><span class="p">(</span><span class="m">1</span><span class="p">);</span> <span class="p">};</span>
+</span><span class='line'>        <span class="n">Func</span><span class="p">&lt;</span><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;,</span> <span class="kt">int</span><span class="p">[]&gt;</span> <span class="n">atois</span> <span class="p">=</span> <span class="n">ss</span> <span class="p">=&gt;</span> <span class="n">ss</span><span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="kt">int</span><span class="p">.</span><span class="n">Parse</span><span class="p">).</span><span class="n">ToArray</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">bs</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="sc">&#39;N&#39;</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="sc">&#39;E&#39;</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="sc">&#39;S&#39;</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="p">-</span><span class="m">1</span><span class="p">,</span> <span class="sc">&#39;W&#39;</span><span class="p">,</span> <span class="p">-</span><span class="m">1</span><span class="p">,</span> <span class="m">0</span><span class="p">};</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">ds</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span><span class="sc">&#39;M&#39;</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="sc">&#39;L&#39;</span><span class="p">,</span> <span class="p">-</span><span class="m">1</span><span class="p">,</span> <span class="sc">&#39;R&#39;</span><span class="p">,</span> <span class="m">1</span><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">mx</span> <span class="p">=</span> <span class="n">atois</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="m">0</span><span class="p">].</span><span class="n">Split</span><span class="p">(</span><span class="sc">&#39; &#39;</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">1</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">lines</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span> <span class="n">i</span> <span class="p">+=</span> <span class="m">2</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">l0</span> <span class="p">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">Split</span><span class="p">(</span><span class="sc">&#39; &#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">p</span> <span class="p">=</span> <span class="n">atois</span><span class="p">(</span><span class="n">l0</span><span class="p">.</span><span class="n">Take</span><span class="p">(</span><span class="m">2</span><span class="p">));</span>
+</span><span class='line'>            <span class="kt">var</span> <span class="n">b</span> <span class="p">=</span> <span class="n">Array</span><span class="p">.</span><span class="n">IndexOf</span><span class="p">(</span><span class="n">bs</span><span class="p">,</span> <span class="n">l0</span><span class="p">[</span><span class="m">2</span><span class="p">][</span><span class="m">0</span><span class="p">]);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">di</span> <span class="k">in</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span> <span class="p">+</span> <span class="m">1</span><span class="p">].</span><span class="n">Select</span><span class="p">(</span><span class="n">c</span> <span class="p">=&gt;</span> <span class="n">Array</span><span class="p">.</span><span class="n">IndexOf</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">c</span><span class="p">)))</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">x2</span><span class="p">(</span><span class="n">d</span> <span class="p">=&gt;</span> <span class="n">p</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="p">+=</span> <span class="n">bs</span><span class="p">[</span><span class="n">b</span> <span class="p">+</span> <span class="m">1</span> <span class="p">+</span> <span class="n">d</span><span class="p">]*(</span><span class="n">di</span> <span class="p">==</span> <span class="m">0</span> <span class="p">?</span> <span class="m">1</span> <span class="p">:</span> <span class="m">0</span><span class="p">));</span>
+</span><span class='line'>                <span class="n">b</span> <span class="p">+=</span> <span class="n">ds</span><span class="p">[</span><span class="n">di</span> <span class="p">+</span> <span class="m">1</span><span class="p">]*</span><span class="m">3</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">b</span> <span class="p">=</span> <span class="n">b</span> <span class="p">&lt;</span> <span class="m">0</span> <span class="p">?</span> <span class="n">bs</span><span class="p">.</span><span class="n">Length</span> <span class="p">-</span> <span class="m">3</span> <span class="p">:</span> <span class="n">b</span> <span class="p">==</span> <span class="n">bs</span><span class="p">.</span><span class="n">Length</span> <span class="p">?</span> <span class="m">0</span> <span class="p">:</span> <span class="n">b</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">x2</span><span class="p">(</span><span class="n">d</span> <span class="p">=&gt;</span> <span class="n">p</span><span class="p">[</span><span class="n">d</span><span class="p">]</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="n">Max</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="n">Min</span><span class="p">(</span><span class="n">mx</span><span class="p">[</span><span class="n">d</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="n">d</span><span class="p">])));</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">yield</span> <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">Format</span><span class="p">(</span><span class="s">&quot;{0} {1} {2}&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">[</span><span class="m">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="m">1</span><span class="p">],</span> <span class="p">(</span><span class="kt">char</span><span class="p">)</span> <span class="n">bs</span><span class="p">[</span><span class="n">b</span><span class="p">]);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&hellip;and a unit test as evidence of compliance to spec :D</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="na">[TestFixture]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">TestFixture</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na">    [Test]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Test</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kt">var</span> <span class="n">outputLines</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DirtyWar</span><span class="p">().</span><span class="n">Run</span><span class="p">(</span><span class="s">@&quot;5 5</span>
+</span><span class='line'><span class="s">1 2 N</span>
+</span><span class='line'><span class="s">LMLMLMLMM</span>
+</span><span class='line'><span class="s">3 3 E</span>
+</span><span class='line'><span class="s">MMRMMRMRRM&quot;</span><span class="p">).</span><span class="n">ToArray</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;1 3 N&quot;</span><span class="p">,</span> <span class="n">outputLines</span><span class="p">[</span><span class="m">0</span><span class="p">]);</span>
+</span><span class='line'>        <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="s">&quot;5 1 E&quot;</span><span class="p">,</span> <span class="n">outputLines</span><span class="p">[</span><span class="m">1</span><span class="p">]);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1517,6 +1656,10 @@ M:  Guys, I'm going home. This fine liquor isn't going to drink itself.
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/03/20/dirty-wars/">Robot Wars Interview Question</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/03/18/method-access-modifiers-as-code-smells/">Method Access Modifiers as Code Smells</a>
       </li>
     
@@ -1530,10 +1673,6 @@ M:  Guys, I'm going home. This fine liquor isn't going to drink itself.
     
       <li class="post">
         <a href="/blog/2013/01/10/handling-annotation-pins-on-the-same-coordinate/">Handling MKMapView Annotation Pins on the Same Coordinate</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/01/07/stop-it-nintendo-no-you're-hurting-me/">Stop It Nintendo, No, You&#8217;re Hurting Me</a>
       </li>
     
   </ul>
