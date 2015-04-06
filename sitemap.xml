@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://jmcd.io/blog/2015/04/06/linux-kernel-headers-for-toshiba-chromebook-2/</loc>
+    <lastmod>2015-04-06T17:15:28+01:00</lastmod>
+  </url>
+  <url>
     <loc>http://jmcd.io/blog/2015/03/20/dirty-wars/</loc>
     <lastmod>2015-03-20T16:10:19+00:00</lastmod>
   </url>
@@ -42,10 +46,10 @@
   </url>
   <url>
     <loc>http://jmcd.io/blog/archives/</loc>
-    <lastmod>2015-03-20T16:24:25+00:00</lastmod>
+    <lastmod>2015-04-06T17:36:46+01:00</lastmod>
   </url>
   <url>
     <loc>http://jmcd.io/</loc>
-    <lastmod>2015-03-20T16:24:25+00:00</lastmod>
+    <lastmod>2015-04-06T17:36:46+01:00</lastmod>
   </url>
 </urlset>
