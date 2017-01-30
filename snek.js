@@ -209,11 +209,11 @@ function Game(size, gameListener) {
 	}
 
 	function dropFood() {
-		var i = Math.floor(Math.random() * size.x * size.y - snek.body().length)
+		var i = Math.floor(Math.random() * (size.x * size.y - snek.body().length));
 		while (snek.body().indexOf(i) !== -1) {
 			i += 1;
 		}
-		food = i;
+		food = i;	
 	}
 
 	function notifyScoreDidChange() {
