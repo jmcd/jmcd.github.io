@@ -1,0 +1,195 @@
+<html>
+
+<body>
+
+    <h1><a href="https://en.wikipedia.org/wiki/Hypotrochoid">Hypotrochoid</a>s and <a href="https://en.wikipedia.org/wiki/Epitrochoid">Epitrochoid</a>s</h1>
+
+    <div style="margin-bottom:10px">
+        <canvas id="canvas" height="500" width="500" />
+    </div>
+
+    <div>
+        <form id="form">
+            <label for="Kind">Kind:</label>
+            <select id="Kind">
+                <option value="KIND_EPITROCHOID" selected="selected">Epitrochoid</option>
+                <option value="KIND_HYPOTROCHOID">Hypotrochoid</option>
+            </select>
+            <div>
+                <label for="BigR">R:</label><input type="number" value="3" step="0.1" id="BigR" />
+                <label for="SmallR">r:</label><input type="number" value="1" step="0.1" id="SmallR" />
+                <label for="D">d:</label><input type="number" value="0.5" step="0.1" id="D" />
+            </div>
+            <!-- <label for="WorldMax">Display area max. X and Y:</label><input type="number" value="5" id="WorldMax" /> -->
+        </form>
+    </div>
+
+    <script>
+        'use strict'
+
+        var FRAMES_PER_REV = 128;
+
+        var KIND_EPITROCHOID = 'KIND_EPITROCHOID';
+        var KIND_HYPOTROCHOID = 'KIND_HYPOTROCHOID';
+
+        var state = init();
+
+        setupFormChangeListeners();
+
+        function setupFormChangeListeners() {
+            var inputs = Array.prototype.slice.call(document.getElementsByTagName('input'));
+            inputs.push(document.getElementById('Kind'));
+            for (let index = 0; index < inputs.length; index++) {
+                const element = inputs[index];
+                element.oninput = function () {
+                    state = init();
+                };
+            }
+        };
+
+        function constructRoulette() {
+            function flt(id) {
+                return parseFloat(document.getElementById(id).value)
+            }
+            var R = flt('BigR');
+            var r = flt('SmallR');
+            var d = flt('D');
+            var roulette = {
+                kind: document.getElementById('Kind').value,
+                worldMax: Math.ceil(R + r + d),
+                R: R,
+                r: r,
+                d: d,
+            };
+
+            switch (roulette.kind) {
+                case KIND_EPITROCHOID:
+                    roulette.point = function (theta) {
+                        var rl = this;
+                        return {
+                            x: (this.R + this.r) * Math.cos(theta) - this.d * Math.cos((this.R + this.r) / this.r * theta),
+                            y: (this.R + this.r) * Math.sin(theta) - this.d * Math.sin((this.R + this.r) / this.r * theta)
+                        };
+                    };
+                    break;
+
+                case KIND_HYPOTROCHOID:
+                    roulette.point = function (theta) {
+                        var rl = this;
+                        return {
+                            x: (this.R - this.r) * Math.cos(theta) + this.d * Math.cos((this.R - this.r) / this.r * theta),
+                            y: (this.R - this.r) * Math.sin(theta) - this.d * Math.sin((this.R - this.r) / this.r * theta)
+                        };
+                    };
+                    break;
+            }
+
+            function lowestCommonMultiple(x, y) {
+
+                x = Math.ceil(x);
+                y = Math.ceil(y);
+
+                function greatestCommonDivisor(x, y) {
+                    x = Math.abs(x);
+                    y = Math.abs(y);
+                    while (y) {
+                        var t = y;
+                        y = x % y;
+                        x = t;
+                    }
+                    return x;
+                }
+                return Math.abs((x * y) / greatestCommonDivisor(x, y));
+            }
+
+            roulette.maxTheta = (2 * Math.PI) * (lowestCommonMultiple(roulette.r, roulette.R) / roulette.R);
+
+            return roulette;
+        }
+
+        function constructState(roulette, stepCount, ctx) {
+            var radsPerStep = roulette.maxTheta / FRAMES_PER_REV;
+            var prevAngle = (stepCount - 1) * radsPerStep;
+            var angle = stepCount * radsPerStep;
+            return {
+                roulette: roulette,
+                prevAngle: prevAngle,
+                angle: angle,
+                ctx: ctx,
+                advance: function () {
+                    var nextStepCount = (stepCount + 1); //% FRAMES_PER_REV;
+                    return constructState(roulette, nextStepCount, ctx);
+                }
+            };
+        }
+
+        function transformContext(ctx, worldMax, canvasLen) {
+            var worldLen = worldMax * 2;
+            ctx.scale(canvasLen / worldLen, canvasLen / worldLen);
+            ctx.translate(worldMax, worldMax);
+            ctx.scale(1, -1);
+            ctx.lineWidth = worldLen / canvasLen;
+        }
+
+        function drawGrid(ctx, worldMax) {
+            var lw = ctx.lineWidth;
+            ctx.lineWidth = lw / 8;
+            ctx.beginPath();
+            for (let i = -worldMax + 1; i < worldMax; i++) {
+                ctx.moveTo(-worldMax, i);
+                ctx.lineTo(worldMax, i);
+                ctx.moveTo(i, -worldMax);
+                ctx.lineTo(i, worldMax);
+            }
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.lineWidth = lw / 2;
+            ctx.moveTo(-worldMax, 0);
+            ctx.lineTo(worldMax, 0);
+            ctx.moveTo(0, -worldMax);
+            ctx.lineTo(0, worldMax);
+            ctx.stroke();
+            ctx.lineWidth = lw;
+        }
+
+        function init() {
+            var canvas = document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
+
+            ctx.resetTransform();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            var canvasLen = Math.min(canvas.width, canvas.height);
+
+            var rl = constructRoulette();
+
+            var prms = constructState(rl, 1, ctx);
+            transformContext(ctx, rl.worldMax, canvasLen);
+            drawGrid(ctx, rl.worldMax);
+            return prms;
+        }
+
+
+
+
+        function loop(timestamp) {
+            var pt0 = state.roulette.point(state.prevAngle);
+            var pt1 = state.roulette.point(state.angle);
+
+            state.ctx.beginPath();
+            state.ctx.moveTo(pt0.x, pt0.y);
+            state.ctx.lineTo(pt1.x, pt1.y);
+            state.ctx.stroke();
+
+            state = state.advance();
+
+            window.requestAnimationFrame(loop);
+        }
+        window.requestAnimationFrame(loop);
+
+
+
+    </script>
+</body>
+
+</html>
