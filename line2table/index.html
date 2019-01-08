@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        canvas {
+            border-color: black;
+            border-width: 1px;
+            border-style: solid;
+            cursor: crosshair;
+        }
+
+        .invalid {
+            background-color: pink;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div>
+
+        <canvas id="canvas"></canvas>
+
+        <br/>
+
+        <h1>Draw a graph 👆, get a table 👇</h1>
+        <a href="#" download="table.csv" id="downloadCsvButton">Download Table</a>
+        <a href="#" download="graph.png" id="downloadImageButton">Download Image</a>
+
+        <br/>
+
+        <table>
+            <tr>
+                <th scope="col">
+                    #<br/>
+                    <input type="text" id="sampleCount" value="10" data-input-type="integer" data-min-val="2">
+                </th>
+                <th scope="col">
+                    X<br/>
+                    <label for="minX">min.</label>
+                    <input type="text" id="minX" value="0" data-input-type="float">
+                    <br/>
+                    <label for="maxX">max.</label>
+                    <input type="text" id="maxX" value="100" data-input-type="float">
+                    <br/>
+                    <label for="dpX"># dec.</label>
+                    <input type="text" id="dpX" value="0" data-input-type="integer" data-min-val="0">
+                </th>
+                <th scope="col">
+
+                    Y
+                    <br/>
+                    <label for="minY">min.</label>
+                    <input type="text" id="minY" value="0" data-input-type="float">
+                    <br/>
+                    <label for="maxY">max.</label>
+                    <input type="text" id="maxY" value="100" data-input-type="float">
+                    <br/>
+                    <label for="dpY"># dec.</label>
+                    <input type="text" id="dpY" value="3" data-input-type="integer" data-min-val="0">
+                </th>
+            </tr>
+            <tr id="table-template-row" class="js-row">
+                <th class="js-row-index" scope="row"></th>
+                <td class="js-row-x"></td>
+                <td class="js-row-y"></td>
+            </tr>
+        </table>
+    </div>
+    by <a href="https://twitter.com/jmcd">@jmcd</a>
+
+
+
+    <script src="app.js"></script>
+    <script>
+
+        function Table() {
+            return {
+                addRow: function (rowData) {
+                    templateRow = document.getElementById("table-template-row");
+                    rowParent = templateRow.parentNode;
+                    templateRow.remove();
+                    templateRow.removeAttribute("id");
+                    return function (rowData) {
+                        var row = templateRow.cloneNode(true);
+                        function setElementInner(className, text) {
+                            var elements = row.getElementsByClassName(className);
+                            for (let i = 0; i < elements.length; i++) {
+                                const element = elements[i];
+                                element.innerText = text;
+                            }
+                        }
+                        setElementInner("js-row-index", "" + rowData.index);
+                        setElementInner("js-row-x", "" + rowData.x);
+                        setElementInner("js-row-y", "" + rowData.y);
+                        rowParent.appendChild(row);
+                    }
+                }(),
+                removeAllRows: function () {
+                    var existingRows = document.getElementsByClassName("js-row");
+                    while (existingRows.length > 0) {
+                        existingRows[0].remove();
+                    }
+                }
+            };
+        }
+
+        function Inputs() {
+            return {
+                constructParams: function () {
+                    function val(elementId) {
+                        var e = document.getElementById(elementId);
+                        var s = e.getAttribute("data-validated-value");
+                        var t = e.getAttribute("data-input-type");
+                        switch (t) {
+                            case "integer": return parseInt(s);
+                            case "float": return parseFloat(s);
+                        }
+                        return undefined;
+                    }
+
+                    return new line2data.Params(
+                        val("sampleCount"),
+                        val("minX"),
+                        val("maxX"),
+                        val("dpX"),
+                        val("minY"),
+                        val("maxY"),
+                        val("dpY")
+                    );
+                }
+            };
+        }
+
+        function Downloader() {
+            var rows = undefined;
+            return {
+                setTableData: function (rows) {
+                    this.rows = rows;
+                },
+                downloadTable: function (element) {
+                    var csvContent = line2data.CSVFactory.construct(this.rows);
+                    var encodedUri = encodeURI(csvContent);
+                    element.href = encodedUri;
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function (event) {
+
+            var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+            var observer = new MutationObserver(function (mutations) {
+                mutations.forEach((mutation) => {
+                    if (mutation.type == "attributes") {
+                        if (mutation.attributeName == "data-validated-value") {
+                            if (mutation.target.hasAttribute(mutation.attributeName)) {
+                                mutation.target.classList.remove("invalid");
+                            } else {
+                                mutation.target.classList.add("invalid");
+                            }
+                            refresh();
+                        }
+                    }
+                });
+            });
+
+            var validationFactory = new line2data.ValidationFactory();
+            var inputElements = document.querySelectorAll('[data-input-type]');
+            for (let i = 0; i < inputElements.length; i++) {
+                const inputElement = inputElements[i];
+                validationFactory.appy(inputElement);
+                observer.observe(inputElement, { attributes: true });
+            }
+
+            var canvas = document.getElementById("canvas");
+
+            var drawing = new line2data.Drawing(canvas);
+            drawing.userDidFinishDrawing = refresh;
+            var downloader = new Downloader();
+            var inputs = new Inputs();
+            var table = new Table();
+
+            document.getElementById("downloadCsvButton").addEventListener("click", function (e) {
+                downloader.downloadTable(e.target);
+            });
+
+            document.getElementById("downloadImageButton").addEventListener("click", function (e) {
+                var dataURL = canvas.toDataURL('image/png').replace("image/png", "image/octet-stream");
+                e.target.target = "_blank";
+                e.target.href = dataURL;
+            });
+
+            function onResize() {
+                canvas.width = window.innerWidth * 0.9;
+                canvas.height = window.innerHeight * 0.5;
+                drawing.redraw();
+            }
+            window.addEventListener("resize", onResize, false);
+            onResize();
+
+            function refresh() {
+                var factory = new line2data.TableDataFactory(inputs.constructParams());
+                var heights = drawing.heights();
+                var rows = factory.construct(heights);
+                downloader.setTableData(rows);
+                table.removeAllRows();
+                for (let i = 0; i < rows.length; i++) {
+                    const r = rows[i];
+                    table.addRow(r);
+                }
+            }
+
+            refresh();
+
+        });
+    </script>
+</body>
+
+</html>
