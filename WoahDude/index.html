@@ -1,0 +1,263 @@
+<html>
+
+<body>
+
+    <h1>Woahdude</h1>
+
+    <label for="fileInput">Source:</label>
+    <input type="file" id="fileInput" />
+    <br />
+    <label for="select">Effect:</label>
+    <select id="select">
+    </select>
+    <label for="uFnInput">u:</label>
+    <input type="text" id="uFnInput" />
+
+    <label for="vFnInput">v</label>
+    <input type="text" id="vFnInput" />
+
+    <aside>Available variables are "x", "y", "r" (half distance x to y), "a" (atan2 of x & y)</aside>
+
+    <br />
+    <a href="#" id="pauseAnchor">Stop</a>
+    <br />
+
+    <img id="image" src="mona_lisa_512_512.jpg" style="display: none;"/>
+
+    <canvas id="canvas" style="width: 100%; height:100%; " width="512px" height="512px"></canvas>
+
+
+</body>
+
+<script>
+
+    var options = [
+        {
+            name: "Circles",
+            uBody: "Math.cos(a) / (2*r)",
+            vBody: "Math.sin(a) / (2*r)"
+        },
+        {
+            name: "S-Warp",
+            uBody: "x * Math.cos(2 * r) - y * Math.sin(2 * r)",
+            vBody: "y * Math.cos(2 * r) + x * Math.sin(2 * r)"
+        },
+        {
+            name: "90s",
+            uBody: "0.02*y+0.03*Math.cos(a*3)/r",
+            vBody: "0.02*x+0.03*Math.sin(a*3)/r"
+        },
+        {
+            name: "Scroll and pinch",
+            uBody: " 0.1*x/(0.11+r*0.5)",
+            vBody: "0.1*y/(0.11+r*0.5)"
+        },
+        {
+            name: "Hypno",
+            uBody: "0.5*a/Math.pi",
+            vBody: "Math.sin(7*r)"
+        },
+        {
+            name: "Fluttering flag",
+            uBody: "r*Math.cos(a+r)",
+            vBody: "r*Math.sin(a+r)"
+        },
+        {
+            name: "Floor and ceiling",
+            uBody: "x/Math.abs(y)",
+            vBody: "1/Math.abs(y)"
+        }
+    ];
+
+    var effectControl = function (selInp, uInp, vInp, options) {
+
+        options.map((o, i) => {
+            var optEl = document.createElement("option");
+            optEl.text = o.name;
+            optEl.value = o.name;
+            return optEl;
+        }).forEach(optEl => { selInp.appendChild(optEl); });
+
+        function getSelectedOption() {
+            const selectedValue = selInp.value;
+            return options.filter(o => o.name === selectedValue)[0];
+        }
+
+        function setTextinputsToReflectSelect() {
+            const selectedOption = getSelectedOption();
+            uInp.value = selectedOption.uBody;
+            vInp.value = selectedOption.vBody;
+        }
+
+        setTextinputsToReflectSelect();
+
+        var obj = {
+            getUFn: function () { return new Function("x", "y", "r", "a", `return ${uFnInput.value};`); },
+            getVFn: function () { return new Function("x", "y", "r", "a", `return ${vFnInput.value};`); }
+        };
+
+        function signalChange() {
+            if (obj.functionsDidChange !== undefined) {
+                obj.functionsDidChange(obj);
+            }
+        }
+
+        selInp.onchange = function () {
+            setTextinputsToReflectSelect();
+            signalChange();
+        };
+
+        uInp.oninput = function (e) {
+            signalChange();
+        };
+
+        vInp.oninput = function (e) {
+            signalChange();
+        };
+
+        return obj;
+    }(
+        document.getElementById("select"),
+        document.getElementById("uFnInput"),
+        document.getElementById("vFnInput"),
+        options
+    );
+
+    var sourceControl = function (fInp, iEle) {
+
+        fInp.onchange = function (e) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                iEle.src = e.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+        var obj = {
+            imageElement: iEle
+        };
+
+        iEle.onload = function (e) {
+            if (obj.sourceDidChange !== undefined) {
+                obj.sourceDidChange(iEle);
+            }
+        };
+
+        return obj;
+    }(
+        document.getElementById("fileInput"),
+        document.getElementById("image")
+    );
+
+    var output = function (canvas) {
+
+        var ctx = canvas.getContext("2d");
+
+        var obj = {
+            animationFrameId: undefined,
+            start: start,
+            stop: stop,
+            isStarted: function () { return this.animationFrameId !== undefined; }
+        };
+
+        function stop() {
+            if (obj.isStarted()) {
+                window.cancelAnimationFrame(obj.animationFrameId);
+                obj.animationFrameId = undefined;
+            }
+        }
+
+        function constructLookupTable(opWidth, opHeight, srcWidth, srcHeight, uFn, vFn) {
+            var table = [];
+            for (var j = 0; j < opHeight; j++) {
+                for (var i = 0; i < opWidth; i++) {
+                    var x = -1.00 + 2.00 * i / opWidth;
+                    var y = -1.00 + 2.00 * j / opHeight;
+                    var d = Math.sqrt(x * x + y * y);
+                    var a = Math.atan2(y, x);
+
+                    var r = d / 2;
+
+                    var u = uFn(x, y, r, a);
+                    var v = vFn(x, y, r, a);
+
+                    table.push((Math.floor(srcWidth * u)) & (srcWidth - 1));
+                    table.push((Math.floor(srcHeight * v)) & (srcHeight - 1));
+                }
+            }
+            return table;
+        }
+
+        function start(srcImageElement, uFn, vFn) {
+
+            stop();
+
+            const srcWidth = Math.min(srcImageElement.width, 512);
+            const srcHeight = Math.min(srcImageElement.height, 512);
+            const bufWidth = canvas.width;
+            const bufHeight = canvas.height;
+
+            const bytesPerPixel = 4;
+
+            ctx.drawImage(srcImageElement, 0, 0);
+            const texture = ctx.getImageData(0, 0, srcWidth, srcHeight);
+            const buffer = ctx.createImageData(bufWidth, bufHeight);
+
+            function step(timestamp) {
+                if (buffer === undefined) { return; }
+                render(timestamp);
+                obj.animationFrameId = window.requestAnimationFrame(step);
+            }
+            obj.animationFrameId = window.requestAnimationFrame(step);
+
+            const lookupTable = constructLookupTable(bufWidth, bufHeight, srcWidth, srcHeight, uFn, vFn);
+
+            function render(timestamp) {
+                for (var j = 0; j < bufHeight; j++) {
+                    const mXresJ = bufWidth * j;
+                    for (var i = 0; i < bufWidth; i++) {
+                        const o = mXresJ + i;
+                        const o2 = o * 2;
+                        const u = lookupTable[o2] + timestamp;
+                        const v = lookupTable[o2 + 1] + timestamp;
+
+                        const textureIndex = (srcWidth * (v & (srcWidth - 1)) + (u & (srcWidth - 1))) * bytesPerPixel;
+                        const bufferIndex = o * bytesPerPixel;
+
+                        for (var k = 0; k < bytesPerPixel; k++) {
+                            buffer.data[bufferIndex + k] = texture.data[textureIndex + k];
+                        }
+                    }
+                }
+                ctx.putImageData(buffer, 0, 0);
+            }
+        }
+
+        return obj;
+    }(document.getElementById("canvas"));
+
+
+    function start() {
+        output.start(sourceControl.imageElement, effectControl.getUFn(), effectControl.getVFn());
+    }
+
+    effectControl.functionsDidChange = start;
+
+    sourceControl.sourceDidChange = start;
+
+    var pauseControl = function (aEle, oput) {
+        aEle.onclick = function (e) {
+            e.preventDefault();
+            if (oput.isStarted()) {
+                oput.stop();
+                aEle.innerText = "Start";
+            } else {
+                start();
+                aEle.innerText = "Stop";
+            }
+        };
+    }(document.getElementById("pauseAnchor"), output);
+
+</script>
+
+</html>
