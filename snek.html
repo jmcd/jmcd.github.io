@@ -1,29 +1,38 @@
+<!doctype html>
 <html>
-<body style="background-color: #c0c0c0">
-	<h1>snek</h1>
- 	<canvas width="320" height="320" id="canvas"></canvas>
-	<div>Score: <span id="score"></span></div>
-	<div id="gameOverMessage">
-		The game is over. Press space to start another.
-	</div>
-	<hr/>
-</body>
+
+<head>
+    <meta charset="utf-8">
+    <title>Snek</title>
+</head>
+
+<body>
+    
+    <a href="/">jmcd.co/</a>
+    
+    <h1>Snek</h1>
+    <canvas width="320" height="320" id="canvas"></canvas>
+<div>Score: <span id="score"></span></div>
+<div id="gameOverMessage">
+	The game is over. Press space to start another.
+</div>
+
 
 <script type="text/javascript" src="snek.js"></script>
 <script type="text/javascript">
 
-	document.addEventListener("DOMContentLoaded", function(event) { 
-		
+	document.addEventListener("DOMContentLoaded", function (event) {
+
 		var canvas = document.getElementById("canvas");
 
 		var gameOverMessage = document.getElementById("gameOverMessage");
 		var scoreElement = document.getElementById("score");
 
 		addSnekGame(canvas, 0.05, {
-			gameOverDidChange: function(gameOver) {
+			gameOverDidChange: function (gameOver) {
 				gameOverMessage.hidden = !gameOver;
 			},
-			scoreDidChange: function(score) {
+			scoreDidChange: function (score) {
 				scoreElement.innerHTML = score;
 			}
 		});
@@ -31,4 +40,8 @@
 	});
 
 </script>
+
+</html>
+</body>
+
 </html>

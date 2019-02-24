@@ -1,35 +1,37 @@
+<!doctype html>
 <html>
 
+<head>
+    <meta charset="utf-8">
+    <title>Whoadude</title>
+</head>
+
 <body>
-
+    
     <a href="/">jmcd.co/</a>
+    
     <h1>Whoadude</h1>
-
-
     <label for="fileInput">Source:</label>
-    <input type="file" id="fileInput" />
-    <br />
-    <label for="select">Effect:</label>
-    <select id="select">
-    </select>
-    <label for="uFnInput">u:</label>
-    <input type="text" id="uFnInput" />
+<input type="file" id="fileInput" />
+<br />
+<label for="select">Effect:</label>
+<select id="select">
+</select>
+<label for="uFnInput">u:</label>
+<input type="text" id="uFnInput" />
 
-    <label for="vFnInput">v</label>
-    <input type="text" id="vFnInput" />
+<label for="vFnInput">v</label>
+<input type="text" id="vFnInput" />
 
-    <aside>Available variables are "x", "y", "r" (half distance x to y), "a" (atan2 of x & y)</aside>
+<aside>Available variables are "x", "y", "r" (half distance x to y), "a" (atan2 of x & y)</aside>
 
-    <br />
-    <a href="#" id="pauseAnchor">Stop</a>
-    <br />
+<br />
+<a href="#" id="pauseAnchor">Stop</a>
+<br />
 
-    <img id="image" src="mona_lisa_512_512.jpg" style="display: none;"/>
+<img id="image" src="mona_lisa_512_512.jpg" style="display: none;" />
 
-    <canvas id="canvas" style="width: 100%; height:80%; " width="512px" height="512px"></canvas>
-
-
-</body>
+<canvas id="canvas" style="width: 100%; height:80%; " width="512px" height="512px"></canvas>
 
 <script>
 
@@ -261,5 +263,6 @@
     }(document.getElementById("pauseAnchor"), output);
 
 </script>
+</body>
 
 </html>
