@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projection Play</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: rgb(20, 20, 35);
+        color: rgb(200, 220, 180);
+        font-family: system-ui, -apple-system, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 16px;
+    }
+    h1 {
+        font-size: 18px;
+        font-weight: 400;
+        color: rgb(120, 130, 150);
+        margin-bottom: 12px;
+    }
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .proj-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+    }
+    .proj-group label {
+        font-size: 12px;
+        color: rgb(120, 130, 150);
+    }
+    select {
+        background: rgb(30, 35, 55);
+        color: rgb(200, 220, 180);
+        border: 1px solid rgb(80, 130, 200);
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        min-width: 150px;
+    }
+    select:focus { outline: 1px solid rgb(80, 130, 200); }
+    .slider-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        min-width: 200px;
+    }
+    .slider-labels {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        font-size: 13px;
+        color: rgb(120, 130, 150);
+    }
+    input[type="range"] {
+        width: 100%;
+        accent-color: rgb(80, 130, 200);
+        cursor: pointer;
+    }
+    .map-container {
+        background: rgb(10, 20, 60);
+        border: 1px solid rgb(60, 80, 120);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    svg { display: block; }
+    #loading {
+        color: rgb(120, 130, 150);
+        font-size: 14px;
+        padding: 20px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Projection Play</h1>
+
+<div class="controls">
+    <div class="proj-group">
+        <label>Projection A</label>
+        <select id="projA"></select>
+    </div>
+    <div class="slider-group">
+        <input type="range" id="weight" min="0" max="1000" value="500">
+        <div class="slider-labels">
+            <span id="weightA">50%</span>
+            <span id="weightB">50%</span>
+        </div>
+    </div>
+    <div class="proj-group">
+        <label>Projection B</label>
+        <select id="projB"></select>
+    </div>
+</div>
+
+<div class="map-container">
+    <div id="loading">Loading coastline data...</div>
+    <svg id="map" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"
+         width="800" height="800" style="display:none">
+        <g id="graticule"></g>
+        <g id="coastlines"></g>
+    </svg>
+</div>
+
+<script src="projections.js"></script>
+<script>
+    const SVG_SIZE = 800;
+    const PADDING = 20;
+    const SVG_NS = "http://www.w3.org/2000/svg";
+
+    const selectA = document.getElementById("projA");
+    const selectB = document.getElementById("projB");
+    const weightSlider = document.getElementById("weight");
+    const weightALabel = document.getElementById("weightA");
+    const weightBLabel = document.getElementById("weightB");
+    const svgEl = document.getElementById("map");
+    const graticuleGroup = document.getElementById("graticule");
+    const coastlineGroup = document.getElementById("coastlines");
+    const loadingEl = document.getElementById("loading");
+
+    let coastlines = [];
+
+    // Populate dropdowns
+    allProjections.forEach((p, i) => {
+        selectA.add(new Option(p.name, i));
+        selectB.add(new Option(p.name, i));
+    });
+    selectA.value = 0;
+    selectB.value = 1;
+
+    // Events
+    selectA.addEventListener("change", render);
+    selectB.addEventListener("change", render);
+    weightSlider.addEventListener("input", render);
+
+    // Load data
+    fetch("https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_coastline.geojson")
+        .then(r => r.json())
+        .then(geojson => {
+            coastlines = parseGeoJson(geojson);
+            loadingEl.style.display = "none";
+            svgEl.style.display = "block";
+            render();
+        })
+        .catch(err => {
+            loadingEl.textContent = "Failed to load coastline data: " + err.message;
+        });
+
+    function parseGeoJson(geojson) {
+        const result = [];
+        for (const feature of geojson.features) {
+            const geom = feature.geometry;
+            if (geom.type === "LineString") {
+                result.push(parseLineString(geom.coordinates));
+            } else if (geom.type === "MultiLineString") {
+                for (const line of geom.coordinates) {
+                    result.push(parseLineString(line));
+                }
+            }
+        }
+        return result;
+    }
+
+    function parseLineString(coords) {
+        return coords.map(([lon, lat]) => ({ lat, lon }));
+    }
+
+    function render() {
+        const idxA = parseInt(selectA.value);
+        const idxB = parseInt(selectB.value);
+        const weightB = parseInt(weightSlider.value) / 1000;
+        const weightA = 1 - weightB;
+
+        weightALabel.textContent = `${Math.round(weightA * 100)}%`;
+        weightBLabel.textContent = `${Math.round(weightB * 100)}%`;
+
+        const projA = allProjections[idxA];
+        const projB = allProjections[idxB];
+        const maxLat = Math.min(projA.maxLatitude, projB.maxLatitude);
+
+        let projectFn;
+        if (weightB < 0.001) {
+            projectFn = (lon, lat) => projA.project(lon, lat);
+        } else if (weightB > 0.999) {
+            projectFn = (lon, lat) => projB.project(lon, lat);
+        } else {
+            projectFn = (lon, lat) => compositeProject(projA, projB, weightB, lon, lat);
+        }
+
+        const bounds = computeBounds(projectFn, maxLat);
+        const { xMin, xMax, yMin, yMax } = bounds;
+
+        let drawW = SVG_SIZE - 2 * PADDING;
+        let drawH = SVG_SIZE - 2 * PADDING;
+        const projAspect = (xMax - xMin) / (yMax - yMin);
+        const canvasAspect = drawW / drawH;
+
+        if (projAspect > canvasAspect) {
+            drawH = drawW / projAspect;
+        } else {
+            drawW = drawH * projAspect;
+        }
+
+        const offsetX = (SVG_SIZE - drawW) / 2;
+        const offsetY = (SVG_SIZE - drawH) / 2;
+
+        function toSVG(p) {
+            const sx = offsetX + (p.x - xMin) / (xMax - xMin) * drawW;
+            const sy = offsetY + (1 - (p.y - yMin) / (yMax - yMin)) * drawH;
+            return { sx, sy };
+        }
+
+        // Build graticule paths
+        let gratPaths = [];
+
+        // Longitude lines every 30 degrees
+        for (let lon = -180; lon <= 180; lon += 30) {
+            let d = "";
+            for (let lat = -maxLat; lat <= maxLat; lat++) {
+                const { sx, sy } = toSVG(projectFn(lon, lat));
+                d += (lat === -maxLat ? "M" : "L") + `${sx.toFixed(2)},${sy.toFixed(2)}`;
+            }
+            gratPaths.push(d);
+        }
+
+        // Latitude lines every 30 degrees
+        for (let lat = -60; lat <= 60; lat += 30) {
+            let d = "";
+            for (let lon = -180; lon <= 180; lon++) {
+                const { sx, sy } = toSVG(projectFn(lon, lat));
+                d += (lon === -180 ? "M" : "L") + `${sx.toFixed(2)},${sy.toFixed(2)}`;
+            }
+            gratPaths.push(d);
+        }
+
+        // Build coastline paths
+        let coastPaths = [];
+        for (const segment of coastlines) {
+            if (segment.length < 2) continue;
+            let d = "";
+            const first = toSVG(projectFn(segment[0].lon, segment[0].lat));
+            d += `M${first.sx.toFixed(2)},${first.sy.toFixed(2)}`;
+
+            for (let i = 1; i < segment.length; i++) {
+                const lonDiff = Math.abs(segment[i].lon - segment[i - 1].lon);
+                const { sx, sy } = toSVG(projectFn(segment[i].lon, segment[i].lat));
+                const cmd = lonDiff > 180 ? "M" : "L";
+                d += `${cmd}${sx.toFixed(2)},${sy.toFixed(2)}`;
+            }
+            coastPaths.push(d);
+        }
+
+        // Update SVG DOM
+        graticuleGroup.innerHTML = "";
+        for (const d of gratPaths) {
+            const path = document.createElementNS(SVG_NS, "path");
+            path.setAttribute("d", d);
+            path.setAttribute("fill", "none");
+            path.setAttribute("stroke", "rgb(40,55,100)");
+            path.setAttribute("stroke-width", "0.5");
+            graticuleGroup.appendChild(path);
+        }
+
+        coastlineGroup.innerHTML = "";
+        for (const d of coastPaths) {
+            const path = document.createElementNS(SVG_NS, "path");
+            path.setAttribute("d", d);
+            path.setAttribute("fill", "none");
+            path.setAttribute("stroke", "rgb(200,220,180)");
+            path.setAttribute("stroke-width", "1.2");
+            coastlineGroup.appendChild(path);
+        }
+    }
+</script>
+
+</body>
+</html>
