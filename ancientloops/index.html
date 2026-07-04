@@ -332,6 +332,54 @@
             100% { opacity: 0.9; }
         }
 
+        .ios-note {
+            display: none;
+            background: rgba(255, 157, 0, 0.07);
+            border: 1px solid rgba(255, 157, 0, 0.15);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+            color: #ffb74d;
+            line-height: 1.5;
+            text-shadow: 0 0 10px rgba(255, 157, 0, 0.1);
+            align-items: flex-start;
+            gap: 12px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 
+                        0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .ios-note-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+        }
+
+        .ios-note-close {
+            background: none;
+            border: none;
+            color: #ffb74d;
+            font-size: 1.25rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s ease;
+            line-height: 1;
+            padding: 0;
+            margin-left: auto;
+            flex-shrink: 0;
+            align-self: flex-start;
+        }
+
+        .ios-note-close:hover {
+            opacity: 1;
+        }
+
         footer {
             margin-top: 25px;
             font-size: 0.75rem;
@@ -353,6 +401,17 @@
         <h1>Casio VL-1/PT-1</h1>
         <div class="subtitle">Drum Machine Emulator</div>
     </header>
+
+    <div class="ios-note" id="ios-note">
+        <div style="flex-grow: 1;">
+            <div class="ios-note-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1px;"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                iOS Audio Notice
+            </div>
+            If you don't hear sound, please make sure your physical Ring/Silent switch on the side of your device is set to Ring (mute switch off) and volume is turned up.
+        </div>
+        <button class="ios-note-close" id="ios-note-close" aria-label="Dismiss notice">&times;</button>
+    </div>
 
     <div class="controls-grid">
         <div class="control-card">
@@ -739,6 +798,21 @@
             cell.classList.remove('playing-step');
         });
         currentUIPlayingStep = -1;
+    }
+
+    // Detect iOS/iPadOS to show mute switch notice
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ||
+                  (navigator.userAgent.includes('Macintosh') && navigator.maxTouchPoints > 1);
+    if (isIOS) {
+        document.getElementById('ios-note').style.display = 'flex';
+    }
+
+    const iosCloseBtn = document.getElementById('ios-note-close');
+    if (iosCloseBtn) {
+        iosCloseBtn.addEventListener('click', () => {
+            document.getElementById('ios-note').style.display = 'none';
+        });
     }
 </script>
 
