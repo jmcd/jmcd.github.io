@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casio VL-1/PT-1 Drum Machine Emulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f0c20 0%, #15102a 50%, #06020f 100%);
+            --panel-bg: rgba(25, 18, 48, 0.45);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --glow-color: #ff007f;
+            --accent-cyan: #00f0ff;
+            --accent-orange: #ff9d00;
+            --accent-violet: #bd00ff;
+            --text-color: #f1f0f7;
+            --text-muted: #8e8a9f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, var(--glow-color), var(--accent-cyan));
+            z-index: -1;
+            border-radius: 26px;
+            opacity: 0.15;
+            filter: blur(10px);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #ff007f, #00f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+            text-shadow: 0 0 30px rgba(255, 0, 127, 0.2);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .control-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        select {
+            background: #19142f;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 10px;
+            outline: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            border-color: var(--glow-color);
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.25);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--glow-color);
+            box-shadow: 0 0 10px var(--glow-color);
+            transition: transform 0.1s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .slider-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-width: 45px;
+            text-align: right;
+            color: var(--accent-cyan);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, var(--glow-color) 0%, #b30059 100%);
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(255, 0, 127, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-play.playing {
+            background: linear-gradient(135deg, #00f0ff 0%, #00a0ab 100%);
+            box-shadow: 0 5px 20px rgba(0, 240, 255, 0.3);
+        }
+
+        .btn-play:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-play:active {
+            transform: translateY(1px);
+        }
+
+        .visualizer-container {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .grid-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-kick { background: var(--accent-orange); box-shadow: 0 0 8px var(--accent-orange); }
+        .dot-snare { background: var(--accent-violet); box-shadow: 0 0 8px var(--accent-violet); }
+        .dot-hat { background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); }
+
+        .step-grid {
+            display: grid;
+            grid-template-rows: repeat(3, auto);
+            gap: 8px;
+            position: relative;
+        }
+
+        .instrument-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .row-label {
+            width: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .steps-container {
+            display: flex;
+            gap: 6px;
+            flex-grow: 1;
+        }
+
+        .step-cell {
+            flex: 1;
+            aspect-ratio: 1;
+            min-width: 22px;
+            max-width: 45px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        /* Active voice triggers */
+        .step-cell.active-kick {
+            background: var(--accent-orange);
+            border-color: #ffb74d;
+            box-shadow: 0 0 12px rgba(255, 157, 0, 0.4);
+        }
+
+        .step-cell.active-snare {
+            background: var(--accent-violet);
+            border-color: #e040fb;
+            box-shadow: 0 0 12px rgba(189, 0, 255, 0.4);
+        }
+
+        .step-cell.active-hat {
+            background: var(--accent-cyan);
+            border-color: #80deea;
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+        }
+
+        /* Running playhead indicator */
+        .step-cell.playing-step {
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.08);
+            z-index: 2;
+        }
+
+        .step-cell.playing-step::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 1.5px solid white;
+            border-radius: 9px;
+            pointer-events: none;
+            animation: pulse-border 1s infinite alternate;
+        }
+
+        @keyframes pulse-border {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.9; }
+        }
+
+        footer {
+            margin-top: 25px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Casio VL-1/PT-1</h1>
+        <div class="subtitle">Drum Machine Emulator</div>
+    </header>
+
+    <div class="controls-grid">
+        <div class="control-card">
+            <div class="control-label">Rhythm Select</div>
+            <select id="rhythm-select">
+                <option value="march">March (8 Steps)</option>
+                <option value="waltz">Waltz (12 Steps)</option>
+                <option value="fourbeat">4-Beat (16 Steps)</option>
+                <option value="swing">Swing (8 Steps)</option>
+                <option value="rock1">Rock 1 (16 Steps)</option>
+                <option value="rock2" selected>Rock 2 (16 Steps)</option>
+                <option value="bossanova">Bossa Nova (32 Steps)</option>
+                <option value="samba">Samba (32 Steps)</option>
+                <option value="rhumba">Rhumba (32 Steps)</option>
+                <option value="beguine">Beguine (16 Steps)</option>
+            </select>
+        </div>
+
+        <div class="control-card">
+            <div class="control-label">Tempo (BPM)</div>
+            <div class="slider-container">
+                <input type="range" id="bpm-slider" min="40" max="300" value="131">
+                <span class="slider-value" id="bpm-val">131</span>
+            </div>
+        </div>
+
+        <div class="control-card">
+            <div class="control-label">Volume</div>
+            <div class="slider-container">
+                <input type="range" id="volume-slider" min="0" max="100" value="85">
+                <span class="slider-value" id="volume-val">85%</span>
+            </div>
+        </div>
+
+        <button class="btn-play" id="btn-toggle">
+            <svg id="play-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span id="btn-text">Start Loop</span>
+        </button>
+    </div>
+
+    <div class="visualizer-container">
+        <div class="grid-header">
+            <div class="control-label" style="margin-bottom: 0;">Sequencer Visualizer</div>
+            <div class="legend">
+                <div class="legend-item"><span class="color-dot dot-kick"></span>Kick (Po)</div>
+                <div class="legend-item"><span class="color-dot dot-snare"></span>Snare (Sha)</div>
+                <div class="legend-item"><span class="color-dot dot-hat"></span>Hat (Pi)</div>
+            </div>
+        </div>
+        <div class="step-grid" id="visualizer-grid">
+            <!-- Dynamic rows will be inserted here -->
+        </div>
+    </div>
+</div>
+
+<footer>
+    Emulation of the NEC D1867G rhythm circuit.
+</footer>
+
+<script>
+    // Patterns definitions matching C# 1-to-1
+    const patterns = {
+        march: {
+            kick:  [1,0,0,0, 0,0,0,0],
+            snare: [0,0,0,0, 1,0,0,0],
+            hat:   [0,0,0,0, 0,0,0,0]
+        },
+        waltz: {
+            kick:  [1,0,0,0, 0,0,0,0, 0,0,0,0],
+            snare: [0,0,0,0, 1,0,0,0, 1,0,0,0],
+            hat:   [0,0,0,0, 0,0,0,0, 0,0,0,0]
+        },
+        fourbeat: {
+            kick:  [1,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+            snare: [0,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+            hat:   [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+        },
+        swing: {
+            kick:  [0,0,0,0, 0,0,0,0],
+            snare: [0,0,0,0, 1,0,0,0],
+            hat:   [1,0,0,0, 0,0,0,1]
+        },
+        rock1: {
+            kick:  [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+            snare: [0,0,0,0, 1,0,1,0, 0,0,0,0, 1,0,0,0],
+            hat:   [0,0,1,0, 0,0,0,0, 0,0,1,0, 0,0,1,0]
+        },
+        rock2: {
+            kick:  [1,0,0,0, 0,0,0,1, 1,0,1,0, 0,0,0,0],
+            snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+            hat:   [0,0,1,0, 0,0,1,0, 0,0,0,0, 0,0,1,0]
+        },
+        bossanova: {
+            kick:  [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0, 1,0,0,0, 0,0,1,0],
+            snare: [0,0,1,0, 1,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,0,0, 0,0,0,0, 1,0,0,0],
+            hat:   [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,0]
+        },
+        samba: {
+            kick:  [0,0,0,0, 0,0,0,0, 1,0,1,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0, 1,0,0,0],
+            snare: [0,0,1,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,1,0],
+            hat:   [1,0,0,0, 1,0,0,0, 0,0,0,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,0,0, 0,0,0,0]
+        },
+        rhumba: {
+            kick:  [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,1,0],
+            snare: [0,0,1,1, 1,0,0,0, 1,0,1,0, 0,0,1,0, 1,0,1,1, 0,0,1,0, 0,0,1,0, 0,0,0,0],
+            hat:   [1,0,0,0, 0,0,1,0, 0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0, 1,0,0,0, 0,0,0,0]
+        },
+        beguine: {
+            kick:  [1,0,0,0, 0,0,0,0, 0,0,0,0, 1,0,0,0],
+            snare: [0,0,1,1, 1,0,1,0, 0,0,1,0, 0,0,1,0],
+            hat:   [0,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0]
+        }
+    };
+
+    // UI elements
+    const rhythmSelect = document.getElementById('rhythm-select');
+    const bpmSlider = document.getElementById('bpm-slider');
+    const bpmVal = document.getElementById('bpm-val');
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeVal = document.getElementById('volume-val');
+    const btnToggle = document.getElementById('btn-toggle');
+    const btnText = document.getElementById('btn-text');
+    const playIcon = document.getElementById('play-icon');
+    const visualizerGrid = document.getElementById('visualizer-grid');
+
+    // Web Audio State
+    let audioContext = null;
+    let masterGain = null;
+    let kickBuffer = null;
+    let hatBuffer = null;
+    let snareBuffer = null;
+
+    let isPlaying = false;
+    let bpm = parseInt(bpmSlider.value);
+    let volume = parseFloat(volumeSlider.value) / 100;
+    
+    let schedulerId = null;
+    let nextStepTime = 0.0;
+    let stepIndex = 0;
+    let lookahead = 0.1; // 100ms
+    let activeSource = null;
+    
+    // Tracking current playing step index on main thread for UI
+    let currentUIPlayingStep = -1;
+
+    // Load visualizer grid on startup
+    updateVisualizerGrid();
+
+    // Event listeners
+    rhythmSelect.addEventListener('change', () => {
+        updateVisualizerGrid();
+        if (isPlaying) {
+            // Reset position to avoid index out of bounds if switching from 32 steps to 8 steps
+            stepIndex = 0;
+        }
+    });
+
+    bpmSlider.addEventListener('input', (e) => {
+        bpm = parseInt(e.target.value);
+        bpmVal.textContent = bpm;
+    });
+
+    volumeSlider.addEventListener('input', (e) => {
+        volume = parseFloat(e.target.value) / 100;
+        volumeVal.textContent = e.target.value + '%';
+        if (masterGain) {
+            masterGain.gain.value = volume;
+        }
+    });
+
+    btnToggle.addEventListener('click', () => {
+        if (!isPlaying) {
+            start();
+        } else {
+            stop();
+        }
+    });
+
+    // Sound generation helpers
+    function createSquareBuffer(ctx, frequency, durationMs) {
+        const sampleRate = ctx.sampleRate;
+        const durationSamples = Math.round(durationMs * sampleRate / 1000.0);
+        const buffer = ctx.createBuffer(1, durationSamples, sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        const phaseStep = frequency / sampleRate;
+        let phase = 0.0;
+
+        for (let i = 0; i < durationSamples; i++) {
+            phase += phaseStep;
+            if (phase >= 1.0) phase -= 1.0;
+            
+            const signal = phase < 0.5 ? 1.0 : -1.0;
+            const env = 1.0 - (i / durationSamples);
+            data[i] = signal * env;
+        }
+        return buffer;
+    }
+
+    function createSnareBuffer(ctx) {
+        const sampleRate = ctx.sampleRate;
+        const durationSamples = Math.round(160 * sampleRate / 1000.0); // 160 ms
+        const buffer = ctx.createBuffer(1, durationSamples, sampleRate);
+        const data = buffer.getChannelData(0);
+
+        let shiftRegister = 0;
+
+        for (let i = 0; i < durationSamples; i++) {
+            // 16-bit LFSR shift register math matching C#
+            let newBit = (shiftRegister & 0x8000) !== 0 ? 1 : 0;
+            newBit ^= (shiftRegister & 0x4000) !== 0 ? 1 : 0;
+            newBit ^= (shiftRegister & 0x1000) !== 0 ? 1 : 0;
+            newBit ^= (shiftRegister & 0x0008) !== 0 ? 1 : 0;
+            newBit = newBit !== 0 ? 0 : 1;
+
+            shiftRegister = ((shiftRegister << 1) | newBit) & 0xffff;
+            
+            const signal = (shiftRegister & 0x8000) !== 0 ? 1.0 : -1.0;
+            const env = 1.0 - (i / durationSamples);
+            data[i] = signal * env;
+        }
+        return buffer;
+    }
+
+    // Audio Playback
+    async function start() {
+        if (!audioContext) {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Pre-render buffers
+                kickBuffer = createSquareBuffer(audioContext, 769.0, 30.0);
+                hatBuffer = createSquareBuffer(audioContext, 1667.0, 20.0);
+                snareBuffer = createSnareBuffer(audioContext);
+
+                masterGain = audioContext.createGain();
+                masterGain.gain.value = volume;
+                masterGain.connect(audioContext.destination);
+            } catch (e) {
+                alert("Web Audio API is not supported in this browser.");
+                return;
+            }
+        }
+
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+
+        isPlaying = true;
+        btnText.textContent = "Stop Loop";
+        btnToggle.classList.add('playing');
+        playIcon.innerHTML = '<rect x="4" y="4" width="16" height="16" fill="currentColor" stroke="none"></rect>';
+
+        // Set start time slightly in future
+        nextStepTime = audioContext.currentTime + 0.05;
+        stepIndex = 0;
+        
+        // Start scheduler loop
+        schedulerId = setInterval(scheduler, 25);
+    }
+
+    function stop() {
+        isPlaying = false;
+        btnText.textContent = "Start Loop";
+        btnToggle.classList.remove('playing');
+        playIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+
+        clearInterval(schedulerId);
+        
+        if (activeSource) {
+            try {
+                activeSource.stop();
+            } catch(e) {}
+            activeSource = null;
+        }
+        
+        // Clear visually playing step
+        clearPlayhead();
+    }
+
+    // Chris Wilson's "A Tale of Two Clocks" Web Audio Scheduler
+    function scheduler() {
+        const pattern = patterns[rhythmSelect.value];
+        const patternLength = pattern.kick.length;
+
+        while (nextStepTime < audioContext.currentTime + lookahead) {
+            scheduleStep(stepIndex, nextStepTime, pattern);
+            
+            // Advance next step time
+            const stepDuration = 15.0 / bpm; // 1/4 note beat is 60.0/BPM. Step is 16th note, so division by 4.
+            
+            // Send message to draw UI on exact scheduled step play time
+            drawUIPlayhead(stepIndex, nextStepTime);
+
+            nextStepTime += stepDuration;
+            stepIndex = (stepIndex + 1) % patternLength;
+        }
+    }
+
+    function scheduleStep(index, time, pattern) {
+        let triggeredBuffer = null;
+
+        if (pattern.kick[index] === 1) triggeredBuffer = kickBuffer;
+        else if (pattern.snare[index] === 1) triggeredBuffer = snareBuffer;
+        else if (pattern.hat[index] === 1) triggeredBuffer = hatBuffer;
+
+        if (triggeredBuffer) {
+            // Apply monophonic voice truncation
+            if (activeSource) {
+                activeSource.stop(time);
+            }
+
+            const source = audioContext.createBufferSource();
+            source.buffer = triggeredBuffer;
+            source.connect(masterGain);
+            source.start(time);
+            activeSource = source;
+        }
+    }
+
+    // UI Rendering
+    function updateVisualizerGrid() {
+        const patternName = rhythmSelect.value;
+        const pattern = patterns[patternName];
+        const numSteps = pattern.kick.length;
+
+        visualizerGrid.innerHTML = '';
+
+        const rows = [
+            { name: 'Kick', data: pattern.kick, cssClass: 'active-kick' },
+            { name: 'Snare', data: pattern.snare, cssClass: 'active-snare' },
+            { name: 'Hat', data: pattern.hat, cssClass: 'active-hat' }
+        ];
+
+        rows.forEach(row => {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'instrument-row';
+
+            const label = document.createElement('div');
+            label.className = 'row-label';
+            label.textContent = row.name;
+            rowDiv.appendChild(label);
+
+            const stepsContainer = document.createElement('div');
+            stepsContainer.className = 'steps-container';
+
+            for (let i = 0; i < numSteps; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'step-cell';
+                cell.dataset.step = i;
+                if (row.data[i] === 1) {
+                    cell.classList.add(row.cssClass);
+                }
+                stepsContainer.appendChild(cell);
+            }
+
+            rowDiv.appendChild(stepsContainer);
+            visualizerGrid.appendChild(rowDiv);
+        });
+    }
+
+    function drawUIPlayhead(index, time) {
+        const timeToWait = (time - audioContext.currentTime) * 1000;
+        
+        setTimeout(() => {
+            if (!isPlaying) return;
+            
+            // Clear previous highlight
+            clearPlayhead();
+            
+            // Add playing highlight to cells in the current column index
+            const cells = visualizerGrid.querySelectorAll(`.step-cell[data-step="${index}"]`);
+            cells.forEach(cell => {
+                cell.classList.add('playing-step');
+            });
+            
+            currentUIPlayingStep = index;
+        }, Math.max(0, timeToWait));
+    }
+
+    function clearPlayhead() {
+        const activeCells = visualizerGrid.querySelectorAll('.playing-step');
+        activeCells.forEach(cell => {
+            cell.classList.remove('playing-step');
+        });
+        currentUIPlayingStep = -1;
+    }
+</script>
+
+</body>
+</html>
